@@ -1,0 +1,63 @@
+#nav {
+margin:0 4px;
+margin-top:4px;
+}
+#nav li {
+    display:block;
+    float:left;
+    width:100px;
+    height:22px;
+    padding-top:2px;
+    border:1px solid #000;
+    text-align:center;
+    -webkit-border-top-right-radius:5px;
+    -webkit-border-top-left-radius:5px;
+
+}
+#nav li:first-child {
+    margin-left:0;
+}
+
+.hideMe {
+    display:none;
+}
+
+#nav li.active {
+    border-bottom:1px solid #fff;
+}
+
+#nav li.spacer {
+    width:3px;
+    border:0px;
+    height:23px;
+    border-bottom:1px solid black;
+}
+
+#content {
+    clear:both;
+    border-bottom:1px solid black;
+    border-left:1px solid black;
+    border-right:1px solid black;
+    margin:0 4px;
+    padding:4px;
+}
+
+#balances li {
+    -webkit-border-radius:5px;
+    padding:4px;
+    border:1px solid black;
+    background:#eee;
+    margin-top:4px;
+}
+#balances #owe li .amount {
+    float:right;
+    text-align:right;
+    color:#f44;
+    font-weight:bold;
+}
+#balances #owed li .amount {
+    float:right;
+    text-align:right;
+    color:#4d4;
+    font-weight:bold;
+}
