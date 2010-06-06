@@ -45,75 +45,93 @@ require_once "./user.php";
                 foreach ($userlist as $user) {
                   echo "<option " . ($user['id'] == $id ? "selected" : "") . " value='${user['id']}'>${user['name']}</option>\n";
                 }
-		echo "</select>\n";		
+                echo "</select>\n";        
               }
               $username   = $_COOKIE['user']['name'];
               $userid     = $_COOKIE['user']['id'];
               $datestring = date("Y-m-d");
         ?>
 	<body>
-        <div id="nav">
+        <nav id="nav">
             <ul>
-                <li>purchase</li>
-                <li class="spacer"></li>
-                <li class="active">balance</li>
-                <li class="spacer"></li>
+                <li pane="balances" class="selected">balance</li>
+                <li pane="purchases">purchase</li>
                 <li>location</li>
             </ul>
-        </div>
+        </nav>
         <div id="content">
             <div id="purchases" class="pane">
+	            <h2>Add a Purchase</h2>
                 <form action='addpurchase.php' method='post'>
-                    <table>
-                        <tr><td>Date:         </td><td><input type='date' name='date'     value='<?php echo $datestring; ?>' /> </td></tr>
-                        <tr><td>Who's Paying: </td><td><?php user_dropdown($userid); ?></td>
-                        <tr><td>Location:     </td><td><input type='text' name='location'/> </td></tr>
-                        <tr><td>Description:  </td><td><input type='text' name='desc'    /> </td></tr>         
-                        <tr><td>Amount (in $):</td><td><input type='tel'  name='amount'  /> </td></tr>
-                        <tr><td>To Andrew:    </td><td><input type='tel'  name='amountA' /> </td></tr>
-                        <tr><td>To Becky:     </td><td><input type='tel'  name='amountB' /> </td></tr>
-                        <tr><td>To Nick:      </td><td><input type='tel'  name='amountN' /> </td></tr>
-                        <tr><td>To Potch:     </td><td><input type='tel'  name='amountP' /> </td></tr>
-                        <tr><td colspan=2 align='center'><input type='submit' /></td></tr>
-                    </table>
+                	<fieldset>
+                        <div class="row"><label for="purchasedate">Date</label><input id="purchasedate" type='date' name='date' value='<?php echo $datestring; ?>' /></div>
+                        <div class="row"><label for="">Who's Paying</label><?php user_dropdown($userid); ?></div>
+                        <div class="row"><label for="">Location</label><input type='text' name='location'/></div>
+                        <div class="row"><label for="">Description</label><input type='text' name='desc'    /></div>         
+                        <div class="row"><label for="">Amount (in $)</label><input type='tel'  name='amount'  /></div>
+                        <div class="row"><label for="">To Andrew</label><input type='tel'  name='amountA' /></div>
+                        <div class="row"><label for="">To Becky</label><input type='tel'  name='amountB' /></div>
+                        <div class="row"><label for="">To Nick</label><input type='tel'  name='amountN' /></div>
+                        <div class="row"><label for="">To Potch</label><input type='tel'  name='amountP' /></div>
+                    </fieldset>
+                    <input type='submit' />
                 </form>
             </div>
             <div id="balances" class="pane selected">
                 <div id="owe">
                     <h2>People You Owe</h2>
-                    <ul id="owelist"></ul>
+                    <section>
+                    	<ul id="owelist"></ul>
+                    </section>
                 </div>
                 <div id="owed">
                     <h2>People Who Owe You</h2>
-                    <ul id="owedlist"></ul>
+                    <section>
+                    	<ul id="owedlist"></ul>
+                    </section>
                 </div>
-                <script>
-                $.post('getbalance.php', function(data) {
-                    var result = $.parseJSON(data);
-                    
-                    document.getElementById("owelist").innerHTML="";
-                    document.getElementById("owedlist").innerHTML="";
-                    
-                    if (result.owe && result.owe.length) {
-                        for (var i = 0; i < result.owe.length; i++) {
-                            var item = result.owe[i];
-                            document.getElementById("owelist").innerHTML += "<li>You owe " + item.name + " <span class='amount'>$" + item.amount + "</li>";
-                        }
-                    } else {
-                        $("#owe").addClass("hideMe");
-                    }
-                    if (result.owed && result.owed.length) {
-                        for (var i=0; i < result.owed.length; i++) {
-                            var item = result.owed[i];
-                            document.getElementById("owedlist").innerHTML += "<li>" + item.name + " owes you <span class='amount'>$" + item.amount + "</li>";
-                        }
-                    } else {
-                        $("#owed").addClass("hideMe");
-                    }
-                });
-                </script>
             </div>
+
         </div>
+        <pre><xmp id="out"></xmp></pre>
+
+
+        <script>
+        $(document).ready(function () {
+            
+            
+            $('#nav ul').click(function(e) {
+            	var li = $(e.target);
+            	$('#nav ul li.selected, #content .pane.selected').removeClass("selected");
+            	li.addClass("selected");
+            	$("#" + li.attr('pane')).addClass('selected');
+            });
+            
+            $.post('getbalance.php', function(data) {
+                var result = $.parseJSON(data);
+            
+                document.getElementById("owelist").innerHTML="";
+                document.getElementById("owedlist").innerHTML="";
+            
+                if (result.owe && result.owe.length) {
+                    for (var i = 0; i < result.owe.length; i++) {
+                        var item = result.owe[i];
+                        document.getElementById("owelist").innerHTML += "<li>You owe " + item.name + " <span class='amount'>$" + item.amount + "</li>";
+                    }
+                } else {
+                    $("#owe").addClass("hideMe");
+                }
+                if (result.owed && result.owed.length) {
+                    for (var i=0; i < result.owed.length; i++) {
+                        var item = result.owed[i];
+                        document.getElementById("owedlist").innerHTML += "<li>" + item.name + " owes you <span class='amount'>$" + item.amount + "</li>";
+                    }
+                } else {
+                    $("#owed").addClass("hideMe");
+                }
+            });
+        });
+        </script>
 
         
 	</body>
