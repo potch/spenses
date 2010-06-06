@@ -1,5 +1,4 @@
 <?php
-  header("Content-type: application/json");
   if (isset($_COOKIE) &&
       isset($_COOKIE['user']) &&
       ($db = sqlite_open('spenses.db', 0666, $sqliteerror))) {
