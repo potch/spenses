@@ -1,7 +1,7 @@
 <?php
 require_once "./user.php";
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -15,7 +15,6 @@ require_once "./user.php";
         <link rel="stylesheet" href="css/reset.css" type="text/css" />
         <link rel="stylesheet" href="css/spenses.css" type="text/css" />
         <script src="js/jquery.js" type="text/javascript"></script>
-        <script src="js/spenses.js" type="text/javascript"></script>
         <!--
         <link rel="apple-touch-icon" href="/gordon/apple-touch-icon.png" />
         <link rel="apple-touch-startup-image" href="/gordon/mobilesplash.png" />
@@ -95,44 +94,7 @@ require_once "./user.php";
         </div>
         <pre><xmp id="out"></xmp></pre>
 
-
-        <script>
-        $(document).ready(function () {
-
-
-            $('#nav ul').click(function(e) {
-                var li = $(e.target);
-                $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
-                li.addClass("selected");
-                $("#" + li.attr('pane')).addClass('selected');
-            });
-
-            $.post('action/getbalance.php', function(data) {
-                var result = $.parseJSON(data);
-
-                document.getElementById("owelist").innerHTML="";
-                document.getElementById("owedlist").innerHTML="";
-
-                if (result.owe && result.owe.length) {
-                    for (var i = 0; i < result.owe.length; i++) {
-                        var item = result.owe[i];
-                        document.getElementById("owelist").innerHTML += "<li>You owe " + item.name + " <span class='amount'>$" + item.amount + "</li>";
-                    }
-                } else {
-                    $("#owe").addClass("hideMe");
-                }
-                if (result.owed && result.owed.length) {
-                    for (var i=0; i < result.owed.length; i++) {
-                        var item = result.owed[i];
-                        document.getElementById("owedlist").innerHTML += "<li>" + item.name + " owes you <span class='amount'>$" + item.amount + "</li>";
-                    }
-                } else {
-                    $("#owed").addClass("hideMe");
-                }
-            });
-        });
-        </script>
-
+        <script src="js/spenses.js" type="text/javascript"></script>
 
     </body>
 </html>

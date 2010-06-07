@@ -1,29 +1,34 @@
-function async(url, params, callback) {
-    
-    var xhr=new XMLHttpRequest();
-    
-    var queryString = [];
-    
-    for (p in params) {
-        queryString.push(p + "=" + encodeURIComponent(params[p]));
-    }
-    queryString = queryString.join("&");
-    
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.setRequestHeader("Content-length", queryString.length);
-    xhr.setRequestHeader("Connection", "close");
- 
-	xhr.onreadystatechange = function() {
-        if (xhr.readyState != 4)  { return; }
-    	if (xhr.responseText) {
-            callback(eval(xhr.responseText));
-        }
-	}
-	
-	xhr.open("POST", url, false);
-	xhr.send(queryString);
-}
+$(document).ready(function () {
 
-function testAsync(result) {
-    console.log(result);
-}
+
+    $('#nav ul').click(function(e) {
+        var li = $(e.target);
+        $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
+        li.addClass("selected");
+        $("#" + li.attr('pane')).addClass('selected');
+    });
+
+    $.post('action/getbalance.php', function(data) {
+        var result = $.parseJSON(data);
+
+        document.getElementById("owelist").innerHTML="";
+        document.getElementById("owedlist").innerHTML="";
+
+        if (result.owe && result.owe.length) {
+            for (var i = 0; i < result.owe.length; i++) {
+                var item = result.owe[i];
+                document.getElementById("owelist").innerHTML += "<li>You owe " + item.name + " <span class='amount'>$" + item.amount + "</li>";
+            }
+        } else {
+            $("#owe").addClass("hideMe");
+        }
+        if (result.owed && result.owed.length) {
+            for (var i=0; i < result.owed.length; i++) {
+                var item = result.owed[i];
+                document.getElementById("owedlist").innerHTML += "<li>" + item.name + " owes you <span class='amount'>$" + item.amount + "</li>";
+            }
+        } else {
+            $("#owed").addClass("hideMe");
+        }
+    });
+});
