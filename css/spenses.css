@@ -44,21 +44,25 @@ div.row,
 section li {
     border-top:1px solid #aaa;
     line-height:2.7em;
+    display:relative;
 }
 div.row:first-child,
 section li:first-child {
     border-top:0;
 }
-div.row input, div.row select {
+div.row input {
     text-align:right;
     line-height:2.7em;
     position:absolute;
     left:0;
     width:90%;
     margin: 0 5%;
+    clear:both;
 }
-select {
+div.row select {
     float:right;
+    margin-right:5%;
+    line-height:2.7em;
 }
 option {
     text-align:right;
@@ -96,16 +100,16 @@ h2 {
     padding-left:5%;
 }
 #balances li .amount {
-    line-height:3em;
-    float:right;
-    text-align:right;
-    font-weight:bold;
-    position:absolute;
-    display:block;
-    top:0;
-    left:0;
-    width:90%;
+    line-height: 2.7em;
+    float: right;
+    text-align: right;
+    font-weight: bold;
+    display: block;
+    top: 0;
+    right: 0;
     margin: 0 5%;
+    padding-top:0;
+    padding-bottom:0;
 }
 #balances #owe li .amount {
     color:#f44;
