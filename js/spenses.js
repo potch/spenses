@@ -3,9 +3,11 @@ $(document).ready(function () {
 
     $('#nav ul').click(function(e) {
         var li = $(e.target);
-        $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
-        li.addClass("selected");
-        $("#" + li.attr('pane')).addClass('selected');
+        if (li.attr('pane')) {
+            $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
+            li.addClass("selected");
+            $("#" + li.attr('pane')).addClass('selected');
+        }
     });
 
     $.post('action/getbalance.php', function(data) {
