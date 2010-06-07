@@ -8,12 +8,12 @@
 
 		<title>'Spenses</title>
 
-		<link rel="shortcut icon" href="./favico.png" type="image/png" />
-    <link rel="stylesheet" href="./spenses.css" type="text/css" />
+		<link rel="shortcut icon" href="../favico.png" type="image/png" />
+    <link rel="stylesheet" href="../css/spenses.css" type="text/css" />
 	</head>
 	<body>
 	<?php
-	  if (!($db = sqlite_open('spenses.db', 0666, $sqliteerror)))
+	  if (!($db = sqlite_open('./db/spenses.db', 0666, $sqliteerror)))
       die($sqliteerror); 
 
  	  if (isset($_COOKIE['user']))
@@ -23,7 +23,7 @@
 	    echo "<ul>";
 	    $res = sqlite_array_query($db, "SELECT * FROM user");
 	    foreach ($res as $entry)
-	      echo "<li class='entry'><a href='dologin.php?uid=".$entry['id']."'>".$entry["name"]."</a></li>";
+	      echo "<li class='entry'><a href='./action/dologin.php?uid=".$entry['id']."'>".$entry["name"]."</a></li>";
 	    echo "</ul>";
 	  }
 

@@ -7,7 +7,7 @@
   
   $printSQL = 0;
   
-    if (!($db = sqlite_open('spenses.db', 0666, $sqliteerror)))
+    if (!($db = sqlite_open('../db/spenses.db', 0666, $sqliteerror)))
       throw new Exception($sqliteerror, 3);
     
     $sql   = "SELECT * FROM user"; if ($printSQL) echo "<p>$sql</p>";

@@ -1,5 +1,5 @@
 <?php
-  if ($db = sqlite_open('spenses.db', 0666, $sqliteerror)) {
+  if ($db = sqlite_open('../db/spenses.db', 0666, $sqliteerror)) {
     
   $sql = "SELECT * FROM user";
   

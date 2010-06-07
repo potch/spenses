@@ -1,7 +1,7 @@
 <?php
   if (isset($_COOKIE) &&
       isset($_COOKIE['user']) &&
-      ($db = sqlite_open('spenses.db', 0666, $sqliteerror))) {
+      ($db = sqlite_open('../db/spenses.db', 0666, $sqliteerror))) {
     
   $uid = $_COOKIE['user']['id'];
   
