@@ -1,111 +1,141 @@
 <?php
+
+$debug    = true;
+$printSQL = true;
+
+require "./db.php";
+
+$dbh = open_db();
+
+////////////////////////////////////////////////////////////////////////////////
+// begin a transaction -- we'll commit only if everything works properly
+$dbh->beginTransaction();
+
+try {
+
+  if (!array_key_exists("date",     $_POST) || !array_key_exists("whopaid",  $_POST) ||
+      !array_key_exists("location", $_POST) || !array_key_exists("amount",   $_POST) ||
+      !array_key_exists("amountA",  $_POST) || !array_key_exists("amountB",  $_POST) ||
+      !array_key_exists("amountN",  $_POST) || !array_key_exists("amountP",  $_POST) ||
+      !array_key_exists("desc",     $_POST)) {
+    throw new Exception("<p>Insufficient _POST arguments</p>");
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // rudimentary error checking -- improve this section (or do it in javascript?)
+
+  if (($date = strtotime($_POST["date"])) === false)
+    throw new Exception("<p>Incorrect date format -- ${_POST["date"]}</p>");
+
+  if (!empty($_POST["amount"]) && !is_numeric($_POST["amount"]))
+    throw new Exception("<p>Invalid amount ${_POST["amount"]}-- expected a number!</p>");
+      
+  $paysForSomeone = false;
+  foreach (array("amountA","amountB","amountN","amountP") as $postKey)
+    if (!empty($_POST[$postKey])) {
+      if (!is_numeric($_POST[$postKey]))
+	throw new Exception("<p>Invalid $postKey -- expected a number!</p>");
+      else
+	$paysForSomeone = true;
+    }
+
+  if (!$paysForSomeone)
+    throw new Exception("<p>You need to pay for at least one person</p>");
   
-  // Exception code 1 = No Post Data
-  // Exception code 2 = Invalid Input
-  // Exception code 3 = Database Connection Error
-  // Exception code 4 = Database Logic Error
+  if ($debug) echo("<p>Updating the database:</p>");
   
-  $printSQL = 0;
+  ////////////////////////////////////////////////////////////////////////////////
+  // find the location specified by the user
+
+  $sql = "SELECT count(*) FROM location WHERE name LIKE \"%${_POST["location"]}%\""; if ($printSQL) echo "<p>$sql</p>";
+
+  if (($res = $dbh->query($sql)) == false)
+    throw new Exception("<p>Could not select from location table</p>");
+
+  $numLocations = $res->fetchColumn();
+
+  if ($numLocations > 1) {
+
+    throw new Exception("<p>Location matches $numLocations database entries -- we only support one match for now!</p>");
+
+  } elseif ($numLocations == 0) {
+
+    if ($debug) echo "<p>Adding new location \"${_POST["location"]}\" to the database!</p>";
+
+    $sql = "INSERT INTO location VALUES (null, \"${_POST["location"]}\",null,null,null)"; if ($printSQL) echo "<p>$sql</p>";
+
+    if (($nrows = $dbh->exec($sql)) != 1)
+      throw new Exception("<p>Inserted $nrows rows into location table, expected 1...</p>");
+
+    $locationId = $dbh->lastInsertId();
+    if ($debug) echo "<p>Added new location with id $locationId</p>";
+
+  } else {
+    $sql = "SELECT id FROM location WHERE name=\"${_POST["location"]}\""; if ($printSQL) echo "<p>$sql</p>";
+
+    $res = $dbh->query($sql, PDO::FETCH_ASSOC);
+    $locationId = $res->fetchColumn();
+    if ($debug) echo "<p>Found location with id $locationId in the database</p>";
+
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // update the purchase table
+
+  $datestring = date("Y-m-d", $date);
+  $payerID = $_POST["whopaid"];
+
+  $sql = "INSERT INTO purchase VALUES (null, \"${_POST["desc"]}\", ${_POST["amount"]}, $payerID, $locationId, \"$datestring\")"; if ($printSQL) echo "<p>$sql</p>";
   
-    if (!($db = sqlite_open('../db/spenses.db', 0666, $sqliteerror)))
-      throw new Exception($sqliteerror, 3);
+  if (($nrows = $dbh->exec($sql)) != 1)
+    throw new Exception("<p>Inserted $nrows rows into purchase table, expected 1...</p>");
     
-    $sql   = "SELECT * FROM user"; if ($printSQL) echo "<p>$sql</p>";
-    $res   = sqlite_query($db, $sql);
-    $users = sqlite_fetch_all($res, SQLITE_ASSOC);
+  $purchaseID = $dbh->lastInsertId();
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // update the purchasedetail table
+  // update the balance        table
+
+  foreach (array(1 => "amountA", 2 => "amountP", 3 => "amountN", 4 => "amountB",) as $recipID => $postKey) {
     
-    if (!array_key_exists("date",     $_POST) || !array_key_exists("whopaid",  $_POST) ||
-        !array_key_exists("location", $_POST) || !array_key_exists("amount",   $_POST) ||
-        !array_key_exists("amountA",  $_POST) || !array_key_exists("amountB",  $_POST) ||
-        !array_key_exists("amountN",  $_POST) || !array_key_exists("amountP",  $_POST) ||
-        !array_key_exists("desc",     $_POST))
-      throw new Exception("No Post Data", 1);
-      
-    $errorString = "";
-
-    if (($date = strtotime($_POST["date"])) === false)
-      $errorString .= "<p>Incorrect Date Format</p>";
-
-    if (!empty($_POST["amount"]) && !is_numeric($_POST["amount"]))
-      $errorString .= "<p>Invalid amount -- expected a number!</p>";
-      
-    $paysForSomeone = false;
-    foreach (array("amountA","amountB","amountN","amountP") as $postKey)
-      if (!empty($_POST[$postKey])) {
-        if (!is_numeric($_POST[$postKey]))
-          $errorString .= "<p>Invalid $postKey -- expected a number!</p>";
-        else
-          $paysForSomeone = true;
-      }
-
-    if (!$paysForSomeone)
-      $errorString .= "<p>You need to pay for at least one person</p>";
-      
-    if (!empty($errorString))
-      throw new Exception($errorString);
-            
-    echo("<p>Updating the database:</p>");
-            
-    $commitSuccess = true;
+    if ($recipID == $payerID || empty($_POST[$postKey])) continue;
     
-    $sql = "SELECT * FROM location WHERE name LIKE \"%${_POST["location"]}%\""; if ($printSQL) echo "<p>$sql</p>";
-    $res = sqlite_query($db, $sql);
-    $loc = sqlite_fetch_all($res);
-        
-    if (count($loc) == 0)
-      $errorString .= "<p>Location does not match database!</p>";
-    else if (count($loc) > 1)
-      $errorString .= "<p>Location matches multiple database entries:</p><ul>";
-      //foreach ($loc as $entry)
-      //echo("<li>Did you mean '". $entry["name"] ."' with id='". $entry["id"] ."'?</li>");
-      //echo("</ul>");
-    else
-      $locationid = $loc[0]["id"];
-      // echo("<p>Single match --- '". $loc[0]["name"] ."' with id='". $loc[0]["id"] . "'</p>");
-      
-    if (!empty($errorString))
-      throw new Exception($errorString, 4);
+    $sql = "INSERT INTO purchasedetail VALUES ($purchaseID, $recipID, ${_POST[$postKey]})"; if ($printSQL) echo "<p>$sql</p>";
 
-    $datestring = date("Y-m-d", $date);
-    $payerID = $_POST["whopaid"];
+    if (($nrows = $dbh->exec($sql)) != 1)
+      throw new Exception("<p>Inserted $nrows rows into purchasedetail table, expected 1...</p>");
+
+    if ($payerID > $recipID) { $payerStatus = "idfrom"; $recipStatus = "idto";   $addToBal = false; }
+    else                     { $payerStatus = "idto"  ; $recipStatus = "idfrom"; $addToBal = true;  }
     
-    // -------- UPDATE purchase       TABLE ---------
-        
-    $sql = "INSERT INTO purchase VALUES (null, \"${_POST["desc"]}\", ${_POST["amount"]}, $payerID, $locationid, \"$datestring\")"; if ($printSQL) echo "<p>$sql</p>";
-    $res = sqlite_query($db, $sql);
-
-    if ($sqliterror = sqlite_last_error($db)) throw new Exception($errorString .= $sqliteerror, 4);
-
-    $purchaseID = sqlite_last_insert_rowid($db);
-      
-    // -------- UPDATE purchasedetail TABLE ---------
-    // -------- UPDATE balance        TABLE ---------
+    $sql = "SELECT amount FROM balance WHERE $payerStatus=$payerID AND $recipStatus=$recipID"; if ($printSQL) echo "<p>$sql</p>";
+    $bal = $dbh->query($sql)->fetchColumn();
     
-    foreach (array(1 => "amountA", 2 => "amountP", 3 => "amountN", 4 => "amountB",) as $recipID => $postKey) {
+    if ($debug) echo "<p>The balance $payerStatus=$payerID $recipStatus=$recipID was $bal before changes to the database</p>";
     
-      if ($recipID == $payerID || empty($_POST[$postKey])) continue;
-      
-      $sql = "INSERT INTO purchasedetail VALUES ($purchaseID, $recipID, ${_POST[$postKey]})"; if ($printSQL) echo "<p>$sql</p>";
-      $res = sqlite_query($db, $sql);
-      
-      if ($sqliterror = sqlite_last_error($db)) throw new Exception($errorString .= $sqliteerror, 4);
-      
-      if ($payerID > $recipID) { $payerStatus = "idfrom"; $recipStatus = "idto";   $addToBal = false; }
-      else                     { $payerStatus = "idto"  ; $recipStatus = "idfrom"; $addToBal = true;  }
-              
-      $sql = "SELECT amount FROM balance WHERE $payerStatus=$payerID AND $recipStatus=$recipID"; if ($printSQL) echo "<p>$sql</p>";
-      $res = sqlite_query($db, $sql);
-      $bal = sqlite_fetch_single($res);
-      
-      echo "<p>The balance $payerStatus=$payerID $recipStatus=$recipID was $bal before changes to the database</p>";
-      
-      if ($addToBal) $bal += $_POST[$postKey];
-      else           $bal -= $_POST[$postKey];
-      
-      echo "<p>The balance $payerStatus=$payerID $recipStatus=$recipID is $bal after changes to the database</p>";
+    if ($addToBal) $bal += $_POST[$postKey];
+    else           $bal -= $_POST[$postKey];
+    
+    if ($debug) echo "<p>The balance $payerStatus=$payerID $recipStatus=$recipID is $bal after changes to the database</p>";
+    
+    $sql = "UPDATE balance SET amount=$bal WHERE $payerStatus=$payerID AND $recipStatus=$recipID"; if ($printSQL) echo "<p>$sql</p>";
 
-      $sql = "UPDATE balance SET amount=$bal WHERE $payerStatus=$payerID AND $recipStatus=$recipID"; if ($printSQL) echo "<p>$sql</p>";
-      $res = sqlite_query($db, $sql);
-    }  
-  
+    if (($nrows = $dbh->exec($sql)) != 1)
+      throw new Exception("<p>Updated $nrows rows in balance table, expected 1...</p>");
+  }  
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // commit the transaction on success
+
+  if ($debug) echo "<p>Everything was successful -- committing the transaction!</p>";
+  $dbh->commit();
+
+} catch (Exception $e) {
+  ////////////////////////////////////////////////////////////////////////////////
+  // roll back the transaction on any error
+
+  echo "<p>Rolling back database changes due to exception: ",  $e->getMessage(), "</p>";
+  $dbh->rollBack();
+}
+
 ?>
