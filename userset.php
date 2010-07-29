@@ -22,7 +22,7 @@
         echo "Select your user name:";
 	echo "<ul>";
 	foreach ($dbh->query('SELECT * FROM user', PDO::FETCH_ASSOC) as $row) {
-	  echo "<li class='entry'><a href='./action/dologin.php?uid=".$row['id']."'>".$row['name']."</a></li>";
+	  echo "<li class='entry'><a href='./action/dologin.php?uid=".$row['userid']."'>".$row['name']."</a></li>";
 	}
 	echo "</ul>";
       }

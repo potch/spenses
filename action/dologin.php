@@ -7,12 +7,15 @@ $dbh = open_db();
 if (array_key_exists("uid",$_GET)) {
   $uid = $_GET['uid'];
 
-  $user = $dbh->query("select * from user where id=$uid", PDO::FETCH_ASSOC)->fetch();
+  if (($res = $dbh->query("select * from user where userid=$uid", PDO::FETCH_ASSOC)) == false)
+    die("Could not query database");
+
+  $user = $res->fetch();
 
   if ($user) {
     $expire = time() + 60 * 60 * 24;
-    setcookie('user[name]', $res['name'], $expire, '/');
-    setcookie('user[id]',   $uid,  $expire, '/');
+    setcookie('user[name]'  , $user['name'], $expire, '/');
+    setcookie('user[userid]', $uid,          $expire, '/');
 
     // We have our cookie, return to the index
     header( 'Location:' . '../index.php');

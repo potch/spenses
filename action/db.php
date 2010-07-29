@@ -1,6 +1,6 @@
 <?php
 
-//print_r($cfg);
+$USE_GET = true;
 
 function open_db() {
   $cfg = array();
@@ -16,40 +16,69 @@ function open_db() {
 }
 
 
-function get_user_list($cohortid = null) {
+function get_user_list($cohortid) {
   $dbh = open_db();
 
   $users = array();
 
-  if (is_null($cohortid)) {
-    if (($res = $dbh->query('select * from user', PDO::FETCH_ASSOC)) == false)
-      die("Could not select from user table");
+  if (($res = $dbh->query("select * from cohortuser natural join user where cohortid=$cohortid", PDO::FETCH_ASSOC)) == false)
+    die("Could not query database");
 
-    foreach ($res as $row) {
-      $row['id'] = (int) $row['id'];
-      array_push($users, $row);
-    }
-  } else {
-    if (($res = $dbh->query("SELECT user.id AS id, user.name AS name FROM cohortuser, user WHERE cohortuser.userid=user.id AND cohortuser.cohortid=$cohortid", PDO::FETCH_ASSOC)) == false)
-      die("Could not join on cohortuser and user tables");
-
-    foreach ($res as $row) {
-      $row['id'] = (int) $row['id'];
-      array_push($users, $row);
-    }
+  foreach ($res as $row) {
+    $row['userid']   = (int) $row['userid'];
+    $row['cohortid'] = (int) $row['cohortid'];
+    array_push($users, $row);
   }
     
   return $users;
 }
 
-function user_dropdown($id) {
-  $userlist = get_user_list();
+function get_cohort_list($userid) {
+  $dbh = open_db();
+
+  $cohorts = array();
+
+  if (($res = $dbh->query("select * from cohortuser natural join cohort where userid=1;", PDO::FETCH_ASSOC)) == false)
+    die("Could not query database");
+
+  foreach ($res as $row) {
+    $row['userid']   = (int) $row['userid'];
+    $row['cohortid'] = (int) $row['cohortid'];
+    array_push($cohorts, $row);
+  }
+
+  return $cohorts;
+}
+
+function user_dropdown($cohortid) {
+  $userlist = get_user_list($cohort);
 
   echo "<select name='whopaid' id='whopaid'>\n";
   foreach ($userlist as $user) {
-    echo "<option " . ($user['id'] == $id ? "selected" : "") . " value='${user['id']}'>${user['name']}</option>\n";
+    echo "<option " . ($user['userid'] == $userid ? "selected" : "") . " value='${user['userid']}'>${user['name']}</option>\n";
   }
   echo "</select>\n";
+}
+
+function cohort_dropdown($userid) {
+  $cohortlist = get_cohort_list($userid);
+
+  echo "<select name='cohort' id='cohort'>\n";
+  foreach ($cohortlist as $cohort) {
+    echo "<option " . (isset($_COOKIE['user']) && isset($_COOKIE['user']['last_cohort_id']) && $_COOKIE['user']['last_cohort_id'] == $cohort['id'] ? "selected" : "") . " value='${cohort['cohortid']}'>${cohort['name']}</option>\n";
+  }
+  echo "</select>\n";
+}
+
+
+// function to verify existence of multiple array keys (compare to array_key_exists(...))
+function array_keys_exist($array, $keys) {
+  foreach($keys as $k) {
+    if(!isset($array[$k])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 ?>

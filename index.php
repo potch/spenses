@@ -39,15 +39,18 @@ require "./action/db.php";
 	<h2>Add a Purchase</h2>
 	<form action='action/addpurchase.php' method='post'>
 	  <fieldset>
+	    <div class="row"><label for="">Cohort</label><?php cohort_dropdown($userid); ?></div>
+	    <!-- need to add "cohort"=cohortId field in post data -->
+	  </fieldset>
+	  <fieldset>
 	    <div class="row"><label for="purchasedate">Date</label><input id="purchasedate" type='date' name='date' value='<?php echo $datestring; ?>' /></div>
-	    <div class="row"><label for="">Who's Paying</label><?php user_dropdown($userid); ?></div>
+	    <div class="row"><label for="">Who's Paying</label><?php /* user_dropdown($userid); */ ?></div>
 	    <div class="row"><label for="">Location</label><input type='text' name='location'/></div>
 	    <div class="row"><label for="">Description</label><input type='text' name='desc'    /></div>
 	    <div class="row"><label for="">Amount (in $)</label><input type='tel'  name='amount'  /></div>
-	    <div class="row"><label for="">To Andrew</label><input type='tel'  name='amountA' /></div>
-	    <div class="row"><label for="">To Becky</label><input type='tel'  name='amountB' /></div>
-	    <div class="row"><label for="">To Nick</label><input type='tel'  name='amountN' /></div>
-	    <div class="row"><label for="">To Potch</label><input type='tel'  name='amountP' /></div>
+	  </fieldset>
+	  <fieldset>
+ 	    <!-- <div class="row"><label for="">To Andrew</label><input type='tel'  name='iou[0][amount]' /><input type="hidden" name='iou[0][userid]' value='' /></div> -->
 	  </fieldset>
 	  <input type='submit' />
 	</form>
