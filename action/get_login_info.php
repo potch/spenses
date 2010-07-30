@@ -25,7 +25,7 @@ try {
 
   $openid->identity = $data["openid"];
   $openid->realm = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-  $openid->openid->returnUrl = $openid->realm . 'index.php';
+  $openid->returnUrl = $openid->realm . 'index.php';
 
   $data["url"] = $openid->authUrl();
 
