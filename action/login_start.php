@@ -25,7 +25,7 @@ try {
 
   $openid->identity = $data["openid"];
   $openid->realm = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-  $openid->returnUrl = $openid->realm . $cfg['docroot'] . '/index.php';
+  $openid->returnUrl = $openid->realm . $cfg['docroot'] . '/action/login_finish.php';
 
   $expire = time() + 60 * 5 * 1;
   setcookie('openid[userid]', $data["userid"], $expire, '/');

@@ -8,7 +8,6 @@ $(document).ready(function () {
         $form = $('#login-form');
         $.post($form.attr('action'), {email: $('#login-email').val()}, 
             function (response, status, xhr) {
-                alert(response.data.url);
                 window.location.href=response.data;
             });
         return false;

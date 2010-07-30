@@ -27,7 +27,7 @@ require "./action/db.php";
     $datestring = date("Y-m-d");
   ?>
   <body>
-    <div id='login'>
+    <div id='login' class='<?php echo $needslogin ? '' : 'hidden'; ?>'>
       <h1>SPENSES LOGO HERE!!!!</h1>
       <h2>Please login</h2>
       <form id='login-form' action='action/login_start.php' method='get'>
