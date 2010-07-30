@@ -1,0 +1,8 @@
+<?php
+
+$cfg['hostname'] = 'localhost';
+$cfg['database'] = 'spenses';
+$cfg['username'] = 'username';
+$cfg['password'] = 'password';
+
+?>

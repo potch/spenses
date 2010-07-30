@@ -1,4 +1,3 @@
 <?php
-    if (!isset($_COOKIE))         header('Location:' . 'userset.php');    
-elseif (!isset($_COOKIE['user'])) header('Location:' . 'userset.php');    
+  if (!isset($_COOKIE) || !isset($_COOKIE['user'])) header('Location:' . 'userset.php');    
 ?>

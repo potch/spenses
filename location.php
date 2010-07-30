@@ -1,13 +1,14 @@
 <?php
   $q = $_GET["q"];
 
-  if (!($db = sqlite_open('spenses.db', 0666, $sqliteerror)))
-    die($sqliteerror); 
-  
+  if (!($db = new SQLite3('./db/spenses.db', SQLITE3_OPEN_READONLY))
+    die($db->lastErrorMsg());
+      
   $sql = "SELECT * FROM location WHERE name LIKE '$q%'"; echo "<p>$sql</p>";
   
-  $res   = sqlite_query($db, $sql);
-  $locations = sqlite_fetch_all($res, SQLITE_ASSOC);
+  $res = $db->query($sql);
+  // $res   = sqlite_query($db, $sql);
+  // $locations = sqlite_fetch_all($res, SQLITE_ASSOC);
   
   echo "<table border='1'>
   <tr>
@@ -16,7 +17,8 @@
   <th>Address</th>
   </tr>";
 
-  foreach ($locations as $location) {
+  while ($location = $res->fetchArray(SQLITE3_ASSOC)) {
+  // foreach ($locations as $location) {
     echo "<tr>";
     echo "<td>" . $location['id'] . "</td>";
     echo "<td>" . $location['name'] . "</td>";
@@ -24,5 +26,4 @@
     echo "</tr>";
   }
   echo "</table>";
-
 ?> 
