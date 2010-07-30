@@ -3,6 +3,13 @@
 $cfg = array();
 require_once('config.php');
 
+function print_sql($sql) {
+  global $cfg;
+  if ($cfg['print_sql']) {
+    echo "<script>console.log(".$sql.");</script>";
+  }
+}
+
 function open_db() {
   global $cfg;
   try {

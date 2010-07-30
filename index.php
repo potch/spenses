@@ -23,7 +23,7 @@ require "./action/db.php";
   </head>
   <?php
     $username   = $_COOKIE['user']['name'];
-    $userid     = $_COOKIE['user']['id'];
+    $userid     = $_COOKIE['user']['userid'];
     $datestring = date("Y-m-d");
   ?>
   <body>
