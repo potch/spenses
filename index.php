@@ -27,6 +27,16 @@ require "./action/db.php";
     $datestring = date("Y-m-d");
   ?>
   <body>
+    <div id='login'>
+      <h1>SPENSES LOGO HERE!!!!</h1>
+      <h2>Please login</h2>
+      <form id='login-form' action='action/login_start.php' method='get'>
+        <fieldset>
+          <div class='row'><label for="">Email</label><input id='login-email' type='text' name='email'/></div>
+        </fieldset>
+        <input type='submit' />
+      </form>
+    </div>
     <nav id="nav">
       <ul>
 	<li pane="balances" class="selected">balance</li>

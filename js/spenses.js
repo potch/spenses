@@ -1,5 +1,18 @@
 $(document).ready(function () {
 
+    $.ajaxSetup({
+        dataType: 'json'
+    });
+
+    $('#login-form').submit(function (e) {
+        $form = $('#login-form');
+        $.post($form.attr('action'), {email: $('#login-email').val()}, 
+            function (response, status, xhr) {
+                alert(response.data.url);
+                window.location.href=response.data;
+            });
+        return false;
+    });
 
     $('#nav ul').click(function(e) {
         var li = $(e.target);

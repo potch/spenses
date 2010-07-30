@@ -1,11 +1,12 @@
 <?php
 
-$USE_GET = true;
+$USE_GET = false;
+
+$cfg = array();
+require_once('db.inc.php');
 
 function open_db() {
-  $cfg = array();
-  require('db.inc.php');
-
+  global $cfg;
   try {
     // Open a persistent connection to mysql database
     $dbh = new PDO("mysql:dbname=${cfg['database']};host=${cfg['hostname']}", $cfg['username'], $cfg['password'], array(PDO::ATTR_PERSISTENT => true));
