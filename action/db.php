@@ -3,7 +3,7 @@
 $USE_GET = false;
 
 $cfg = array();
-require_once('db.inc.php');
+require_once('config.php');
 
 function open_db() {
   global $cfg;
