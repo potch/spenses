@@ -43,6 +43,10 @@ try {
   setcookie('user[nick]'  , $user['nick'],   $expire, '/');
   setcookie('user[email]' , $user['email'],  $expire, '/');
 
+  setcookie ("openid[userid]", "", time() - 3600, '/');
+  setcookie ("openid[status]", "", time() - 3600, '/');
+  unset($_COOKIE['openid']); 
+
   header('Location:' . '../index.php');
 
 } catch (Exception $e) {
