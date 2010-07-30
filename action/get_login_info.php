@@ -2,6 +2,7 @@
 
 try {
   require "./db.php";
+  require "../lib/openid.php";
 
   $dbh = open_db();
 
@@ -19,6 +20,16 @@ try {
   $data = $res->fetch();
 
   $data["userid"] = (int) $data["userid"];
+
+  $openid = new LightOpenID;
+
+  $openid->identity = $data["openid"];
+
+  $data["url"] = $openid->authUrl();
+
+  // echo "<p>${data["url"]}</p>";
+
+  // print_r(json_decode(json_encode(array('status' => 'success', 'message' => null, 'data' => $data))));
 
   echo json_encode(array('status' => 'success', 'message' => null, 'data' => $data));
 
