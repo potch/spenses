@@ -6,7 +6,7 @@ require_once('config.php');
 function print_sql($sql) {
   global $cfg;
   if ($cfg['print_sql']) {
-    echo "<script>console.log(".$sql.");</script>";
+    echo "<script>console.log('".addslashes($sql)."');</script>";
   }
 }
 
@@ -27,7 +27,7 @@ function get_user_list($cohortid) {
 
   $users = array();
 
-  if (($res = $dbh->query("select * from cohortuser natural join user where cohortid=$cohortid", PDO::FETCH_ASSOC)) == false)
+  if (($res = $dbh->query("SELECT * FROM cohortuser NATURAL JOIN user WHERE cohortid=$cohortid", PDO::FETCH_ASSOC)) == false)
     die("Could not query database");
 
   foreach ($res as $row) {
@@ -44,7 +44,7 @@ function get_cohort_list($userid) {
 
   $cohorts = array();
 
-  if (($res = $dbh->query("select * from cohortuser natural join cohort where userid=1;", PDO::FETCH_ASSOC)) == false)
+  if (($res = $dbh->query("SELECT * FROM cohortuser NATURAL JOIN cohort WHERE userid=$userid;", PDO::FETCH_ASSOC)) == false)
     die("Could not query database");
 
   foreach ($res as $row) {
