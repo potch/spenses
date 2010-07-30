@@ -28,7 +28,7 @@ try {
 
   foreach ($purchaseids as $row) {
 
-    $sql = "SELECT purchase.*, payer.name AS payer_name, payer.nick AS payer_nick, location.name AS location_name FROM purchase LEFT JOIN user AS payer ON userid_payer=payer.userid LEFT JOIN location USING(locationid) WHERE purchaseid=${row["purchaseid"]}"; if ($cfg['print_sql']) echo "<p>$sql</p>";
+    print_sql($sql = "SELECT purchase.*, payer.name AS payer_name, payer.nick AS payer_nick, location.name AS location_name FROM purchase LEFT JOIN user AS payer ON userid_payer=payer.userid LEFT JOIN location USING(locationid) WHERE purchaseid=${row["purchaseid"]}");
     
     if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
       throw new Exception("Could not select purchaseid $purchaseid");

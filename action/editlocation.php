@@ -27,7 +27,7 @@ try {
   if ($valueString == "")
     throw new Exception("No values were supplied to update the database");
 
-  $sql = "UPDATE location SET $valueString WHERE id=${_GET["id"]}"; if ($cfg['print_sql']) echo "<p>$sql</p>";
+  print_sql($sql = "UPDATE location SET $valueString WHERE id=${_GET["id"]}");
 
   if (($nrows = $dbh->exec($sql)) > 1)
     throw new Exception("Updated $nrows locations; expected 0 or 1...");

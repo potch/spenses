@@ -11,7 +11,7 @@ try {
   if (!array_key_exists('name', $REQUEST))
     throw new Exception('Did not supply name');
 
-  $sql = "SELECT * FROM location WHERE name LIKE '${REQUEST["name"]}%'"; if ($cvg['print_sql']) echo "<p>$sql</p>";
+  print_sql($sql = "SELECT * FROM location WHERE name LIKE '${REQUEST["name"]}%'");
   
   if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
     throw new Exception("Could not select recent purchase ids");

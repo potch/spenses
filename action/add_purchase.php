@@ -35,12 +35,12 @@ try {
       throw new Exception("Invalid iou amount ${iou["amount"]}");
   }
     
-  if ($debug) echo("<p>Updating the database:</p>");
+  // if ($debug) echo("<p>Updating the database:</p>");
   
   ////////////////////////////////////////////////////////////////////////////////
   // find the location specified by the user
 
-  $sql = "SELECT count(*) FROM location WHERE name LIKE \"%${REQUEST["location"]}%\""; if ($cfg['print_sql']) echo "<p>$sql</p>";
+  print_sql($sql = "SELECT count(*) FROM location WHERE name LIKE \"%${REQUEST["location"]}%\"");
 
   if (($res = $dbh->query($sql)) == false)
     throw new Exception("Could not select from location table");
@@ -55,22 +55,22 @@ try {
 
     // Need to add spell checking here, to avoid off-by-one-lettering!
 
-    if ($debug) echo "<p>Adding new location \"${REQUEST["location"]}\" to the database!</p>";
+    // if ($debug) echo "<p>Adding new location \"${REQUEST["location"]}\" to the database!</p>";
 
-    $sql = "INSERT INTO location SET name=\"${REQUEST["location"]}\", date_created=NOW()"; if ($cfg['print_sql']) echo "<p>$sql</p>";
+    print_sql($sql = "INSERT INTO location SET name=\"${REQUEST["location"]}\", date_created=NOW()");
 
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Inserted $nrows rows into location table, expected 1...");
 
     $locationId = $dbh->lastInsertId();
-    if ($debug) echo "<p>Added new location with id $locationId</p>";
+    // if ($debug) echo "<p>Added new location with id $locationId</p>";
 
   } else {
-    $sql = "SELECT locationid FROM location WHERE name=\"${REQUEST["location"]}\""; if ($cfg['print_sql']) echo "<p>$sql</p>";
+    print_sql($sql = "SELECT locationid FROM location WHERE name=\"${REQUEST["location"]}\"");
 
     $res = $dbh->query($sql, PDO::FETCH_ASSOC);
     $locationId = $res->fetchColumn();
-    if ($debug) echo "<p>Found location with id $locationId in the database</p>";
+    // if ($debug) echo "<p>Found location with id $locationId in the database</p>";
 
   }
 
@@ -80,7 +80,7 @@ try {
   $datestring = date("Y-m-d", $date);
   $useridEnterer = $_COOKIE['user']['userid'];
 
-  $sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=${REQUEST["amount"]}, userid=$useridEnterer, userid_payer=${REQUEST["whopaid"]}, locationid=$locationId, date_of=\"$datestring\", date_created=NOW()"; if ($cfg['print_sql']) echo "<p>$sql</p>";
+  print_sql($sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=${REQUEST["amount"]}, userid=$useridEnterer, userid_payer=${REQUEST["whopaid"]}, locationid=$locationId, date_of=\"$datestring\", date_created=NOW()");
   
   if (($nrows = $dbh->exec($sql)) != 1)
     throw new Exception("Inserted $nrows rows into purchase table, expected 1...");
@@ -98,18 +98,16 @@ try {
     // We don't store self-ious
     if ($REQUEST['whopaid'] == $iou['userid']) continue;
 
-    $sql = "INSERT INTO iou SET purchaseid=$purchaseId, cohortid=${REQUEST["cohortid"]}, userid_payer=${REQUEST["whopaid"]}, userid_payee=${iou["userid"]}, amount=${iou["amount"]}, date_updated=NOW()"; if ($cfg['print_sql']) echo "<p>$sql</p>";
+    print_sql($sql = "INSERT INTO iou SET purchaseid=$purchaseId, cohortid=${REQUEST["cohortid"]}, userid_payer=${REQUEST["whopaid"]}, userid_payee=${iou["userid"]}, amount=${iou["amount"]}, date_updated=NOW()");
 
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Inserted $nrows rows into purchasedetail table, expected 1...");
 
     if ($REQUEST['whopaid'] < $iou['userid']) {
-      $sql = "UPDATE balance SET amount=amount-${iou["amount"]} WHERE userid_from=${REQUEST["whopaid"]} AND userid_to=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}";
+      print_sql($sql = "UPDATE balance SET amount=amount-${iou["amount"]} WHERE userid_from=${REQUEST["whopaid"]} AND userid_to=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}");
     } else {
-      $sql = "UPDATE balance SET amount=amount+${iou["amount"]} WHERE userid_to=${REQUEST["whopaid"]} AND userid_from=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}";
+      print_sql($sql = "UPDATE balance SET amount=amount+${iou["amount"]} WHERE userid_to=${REQUEST["whopaid"]} AND userid_from=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}");
     }
-
-    if ($cfg['print_sql']) echo "<p>$sql</p>";
       
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Updated $nrows rows in balance table, expected 1...");
@@ -119,8 +117,7 @@ try {
   ////////////////////////////////////////////////////////////////////////////////
   // commit the transaction on success
 
-  if ($debug)   echo "<p>Everything was successful -- committing the transaction!</p>";
-  if ($nowrite) throw new Exception("The 'nowrite' flag was set -- will not commit the transaction!");
+  // if ($debug)   echo "<p>Everything was successful -- committing the transaction!</p>";
   $dbh->commit();
 
   echo json_encode(array('result' => 'success', 'message' => null, 'data' => null));

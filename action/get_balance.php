@@ -21,7 +21,7 @@ try {
   if (array_key_exists('cohortid', $REQUEST))
     $cohortstring = "AND cohortid=${REQUEST["cohortid"]}";
 
-  $sql = "SELECT balance.*, cohort.name AS cohort_name, ufrom.name AS from_name, ufrom.nick AS from_nick, uto.name AS to_name, uto.nick AS to_nick FROM balance LEFT JOIN user AS ufrom ON userid_from=ufrom.userid LEFT JOIN user AS uto ON userid_to=uto.userid LEFT JOIN cohort USING(cohortid) WHERE amount <> 0 AND (userid_from=1 or userid_to=1) $cohortstring"; if ($cfg['print_sql']) echo "<p>$sql</p>";   
+  print_sql($sql = "SELECT balance.*, cohort.name AS cohort_name, ufrom.name AS from_name, ufrom.nick AS from_nick, uto.name AS to_name, uto.nick AS to_nick FROM balance LEFT JOIN user AS ufrom ON userid_from=ufrom.userid LEFT JOIN user AS uto ON userid_to=uto.userid LEFT JOIN cohort USING(cohortid) WHERE amount <> 0 AND (userid_from=1 or userid_to=1) $cohortstring");
 
   if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
     throw new Exception('Error selecting from balance table');

@@ -56,27 +56,6 @@ function get_cohort_list($userid) {
   return $cohorts;
 }
 
-function user_dropdown($cohortid) {
-  $userlist = get_user_list($cohort);
-
-  echo "<select name='whopaid' id='whopaid'>\n";
-  foreach ($userlist as $user) {
-    echo "<option " . ($user['userid'] == $userid ? "selected" : "") . " value='${user['userid']}'>${user['name']}</option>\n";
-  }
-  echo "</select>\n";
-}
-
-function cohort_dropdown($userid) {
-  $cohortlist = get_cohort_list($userid);
-
-  echo "<select name='cohort' id='cohort'>\n";
-  foreach ($cohortlist as $cohort) {
-    echo "<option " . (isset($_COOKIE['user']) && isset($_COOKIE['user']['last_cohort_id']) && $_COOKIE['user']['last_cohort_id'] == $cohort['id'] ? "selected" : "") . " value='${cohort['cohortid']}'>${cohort['name']}</option>\n";
-  }
-  echo "</select>\n";
-}
-
-
 // function to verify existence of multiple array keys (compare to array_key_exists(...))
 function array_keys_exist($array, $keys) {
   foreach($keys as $k) {
