@@ -27,13 +27,11 @@ try {
   $openid->realm = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
   $openid->returnUrl = $openid->realm . $cfg['docroot'] . '/index.php';
 
-  $data["url"] = $openid->authUrl();
-
-  // echo "<p>${data["url"]}</p>";
-
-  // print_r(json_decode(json_encode(array('status' => 'success', 'message' => null, 'data' => $data))));
-
-  echo json_encode(array('status' => 'success', 'message' => null, 'data' => $data));
+  $expire = time() + 60 * 5 * 1;
+  setcookie('openid[userid]', $data["userid"], $expire, '/');
+  setcookie('openid[status]', 'outbound',      $expire, '/');
+  
+  echo json_encode(array('status' => 'success', 'message' => null, 'data' => $openid->authUrl()));
 
 } catch (Exception $e) {
   echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
