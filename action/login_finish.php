@@ -27,7 +27,9 @@ try {
   if (!isset($_COOKIE['openid']['userid']))
     throw new Exception('Did not obtain userid');
 
-  if (($res = $dbh->query("SELECT * FROM user WHERE userid=${_COOKIE["openid"]["userid"]}", PDO::FETCH_ASSOC)) == false)
+  $userid = $_COOKIE['openid']['userid'];
+
+  if (($res = $dbh->query("SELECT * FROM user WHERE userid=$userid", PDO::FETCH_ASSOC)) == false)
     throw new Exception("Could not query for user");
 
   $user = $res->fetch();
