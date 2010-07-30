@@ -2,13 +2,10 @@
 
 try {
 
-  $debug    = false;
-  $printSQL = false;
-
   require "./db.php";
 
-  if ($USE_GET) $REQUEST = $_GET;
-  else          $REQUEST = $_POST;
+  if ($cfg['use_get']) $REQUEST = $_GET;
+  else                 $REQUEST = $_POST;
 
   $dbh = open_db();
 
@@ -43,7 +40,7 @@ try {
   ////////////////////////////////////////////////////////////////////////////////
   // find the location specified by the user
 
-  $sql = "SELECT count(*) FROM location WHERE name LIKE \"%${REQUEST["location"]}%\""; if ($printSQL) echo "<p>$sql</p>";
+  $sql = "SELECT count(*) FROM location WHERE name LIKE \"%${REQUEST["location"]}%\""; if ($cfg['print_sql']) echo "<p>$sql</p>";
 
   if (($res = $dbh->query($sql)) == false)
     throw new Exception("Could not select from location table");
@@ -60,7 +57,7 @@ try {
 
     if ($debug) echo "<p>Adding new location \"${REQUEST["location"]}\" to the database!</p>";
 
-    $sql = "INSERT INTO location SET name=\"${REQUEST["location"]}\", date_created=NOW()"; if ($printSQL) echo "<p>$sql</p>";
+    $sql = "INSERT INTO location SET name=\"${REQUEST["location"]}\", date_created=NOW()"; if ($cfg['print_sql']) echo "<p>$sql</p>";
 
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Inserted $nrows rows into location table, expected 1...");
@@ -69,7 +66,7 @@ try {
     if ($debug) echo "<p>Added new location with id $locationId</p>";
 
   } else {
-    $sql = "SELECT locationid FROM location WHERE name=\"${REQUEST["location"]}\""; if ($printSQL) echo "<p>$sql</p>";
+    $sql = "SELECT locationid FROM location WHERE name=\"${REQUEST["location"]}\""; if ($cfg['print_sql']) echo "<p>$sql</p>";
 
     $res = $dbh->query($sql, PDO::FETCH_ASSOC);
     $locationId = $res->fetchColumn();
@@ -83,7 +80,7 @@ try {
   $datestring = date("Y-m-d", $date);
   $useridEnterer = $_COOKIE['user']['userid'];
 
-  $sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=${REQUEST["amount"]}, userid=$useridEnterer, userid_payer=${REQUEST["whopaid"]}, locationid=$locationId, date_of=\"$datestring\", date_created=NOW()"; if ($printSQL) echo "<p>$sql</p>";
+  $sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=${REQUEST["amount"]}, userid=$useridEnterer, userid_payer=${REQUEST["whopaid"]}, locationid=$locationId, date_of=\"$datestring\", date_created=NOW()"; if ($cfg['print_sql']) echo "<p>$sql</p>";
   
   if (($nrows = $dbh->exec($sql)) != 1)
     throw new Exception("Inserted $nrows rows into purchase table, expected 1...");
@@ -101,7 +98,7 @@ try {
     // We don't store self-ious
     if ($REQUEST['whopaid'] == $iou['userid']) continue;
 
-    $sql = "INSERT INTO iou SET purchaseid=$purchaseId, cohortid=${REQUEST["cohortid"]}, userid_payer=${REQUEST["whopaid"]}, userid_payee=${iou["userid"]}, amount=${iou["amount"]}, date_updated=NOW()"; if ($printSQL) echo "<p>$sql</p>";
+    $sql = "INSERT INTO iou SET purchaseid=$purchaseId, cohortid=${REQUEST["cohortid"]}, userid_payer=${REQUEST["whopaid"]}, userid_payee=${iou["userid"]}, amount=${iou["amount"]}, date_updated=NOW()"; if ($cfg['print_sql']) echo "<p>$sql</p>";
 
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Inserted $nrows rows into purchasedetail table, expected 1...");
@@ -112,7 +109,7 @@ try {
       $sql = "UPDATE balance SET amount=amount+${iou["amount"]} WHERE userid_to=${REQUEST["whopaid"]} AND userid_from=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}";
     }
 
-    if ($printSQL) echo "<p>$sql</p>";
+    if ($cfg['print_sql']) echo "<p>$sql</p>";
       
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Updated $nrows rows in balance table, expected 1...");

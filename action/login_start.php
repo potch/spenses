@@ -6,13 +6,13 @@ try {
 
   $dbh = open_db();
 
-  if ($USE_GET) $REQUEST = $_GET;
-  else          $REQUEST = $_POST;
+  if ($cfg['use_get']) $REQUEST = $_GET;
+  else                 $REQUEST = $_POST;
 
   if (!array_key_exists('email', $REQUEST))
     throw new Exception('No email provided');
 
-  $sql = "SELECT openid, userid FROM user WHERE email='${REQUEST["email"]}'"; if ($printSQL) echo "<p>$sql</p>";
+  $sql = "SELECT openid, userid FROM user WHERE email='${REQUEST["email"]}'";
 
   if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
     throw new Exception("Could not select from userid table");

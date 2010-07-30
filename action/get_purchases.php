@@ -1,12 +1,10 @@
 <?php
 
 try {
-  $printSQL = false;
-
   require "./db.php";
 
-  if ($USE_GET) $REQUEST = $_GET;
-  else          $REQUEST = $_POST;
+  if ($cfg['use_get']) $REQUEST = $_GET;
+  else                 $REQUEST = $_POST;
 
   $dbh = open_db();
 
@@ -19,7 +17,7 @@ try {
     $number = 20;
   }
 
-  $sql = "SELECT DISTINCT purchaseid FROM iou WHERE cohortid=${REQUEST["cohortid"]} AND (userid_payer=${REQUEST["userid"]} OR userid_payee=${REQUEST["userid"]}) ORDER BY date_updated DESC LIMIT $number"; if ($printSQL) echo "<p>$sql</p>";
+  $sql = "SELECT DISTINCT purchaseid FROM iou WHERE cohortid=${REQUEST["cohortid"]} AND (userid_payer=${REQUEST["userid"]} OR userid_payee=${REQUEST["userid"]}) ORDER BY date_updated DESC LIMIT $number"; if ($cfg['print_sql']) echo "<p>$sql</p>";
 
   if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
       throw new Exception("Could not select recent purchase ids");
@@ -30,7 +28,7 @@ try {
 
   foreach ($purchaseids as $row) {
 
-    $sql = "SELECT purchase.*, payer.name AS payer_name, payer.nick AS payer_nick, location.name AS location_name FROM purchase LEFT JOIN user AS payer ON userid_payer=payer.userid LEFT JOIN location USING(locationid) WHERE purchaseid=${row["purchaseid"]}"; if ($printSQL) echo "<p>$sql</p>";
+    $sql = "SELECT purchase.*, payer.name AS payer_name, payer.nick AS payer_nick, location.name AS location_name FROM purchase LEFT JOIN user AS payer ON userid_payer=payer.userid LEFT JOIN location USING(locationid) WHERE purchaseid=${row["purchaseid"]}"; if ($cfg['print_sql']) echo "<p>$sql</p>";
     
     if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
       throw new Exception("Could not select purchaseid $purchaseid");

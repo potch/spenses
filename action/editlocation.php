@@ -1,44 +1,48 @@
 <?php
 
-$printSQL = true;
-
-require "./db.php";
-
-$dbh = open_db();
-
-$dbh->beginTransaction();
-
 try {
+  require "./db.php";
+
+  $dbh = open_db();
+
+  if ($cfg['use_get']) $REQUEST = $_GET;
+  else                 $REQUEST = $_POST;
+
+  $dbh->beginTransaction();
+
   $valueString = "";
-  if (!array_key_exists('id', $_GET))
-    throw new Exception("<p>You did not supply the location id</p>");
+  if (!array_key_exists('id', $REQUEST))
+    throw new Exception("You did not supply the location id");
 
   if (($res = $dbh->query("SELECT count(*) FROM location WHERE id=${_GET["id"]}")) == false)
-    throw new Exception("<p>Could not connect to location table</p>");
+    throw new Exception("Could not connect to location table");
 
   if (($nrows = $res->fetchColumn()) != 1)
-    throw new Exception("<p>Found $nrows locations with id ${_GET["id"]}, expecting 1...</p>");
+    throw new Exception("Found $nrows locations with id ${_GET["id"]}, expecting 1...");
     
-  if (array_key_exists('lat',  $_GET)) $valueString .=  "lat=${_GET["lat"]} ";
-  if (array_key_exists('lon',  $_GET)) $valueString .=  "lon=${_GET["lon"]} ";
-  if (array_key_exists('addr', $_GET)) $valueString .= "addr=\"${_GET["addr"]}\" ";
+  if (array_key_exists('lat',  $REQUEST)) $valueString .= "lat=${_GET["lat"]} ";
+  if (array_key_exists('lon',  $REQUEST)) $valueString .= "lon=${_GET["lon"]} ";
+  if (array_key_exists('addr', $REQUEST)) $valueString .= "addr=\"${_GET["addr"]}\" ";
 
   if ($valueString == "")
-    throw new Exception("<p>No values were supplied to update the database</p>");
+    throw new Exception("No values were supplied to update the database");
 
-  $sql = "UPDATE location SET $valueString WHERE id=${_GET["id"]}"; if ($printSQL) echo "<p>$sql</p>";
+  $sql = "UPDATE location SET $valueString WHERE id=${_GET["id"]}"; if ($cfg['print_sql']) echo "<p>$sql</p>";
 
   if (($nrows = $dbh->exec($sql)) > 1)
-    throw new Exception("<p>Updated $nrows locations; expected 0 or 1...</p>");
+    throw new Exception("Updated $nrows locations; expected 0 or 1...");
   elseif ($nrows == 0)
-    throw new Exception("<p>Updated $nrows locations; the supplied data were already in the database</p>");
+    throw new Exception("Updated $nrows locations; the supplied data were already in the database");
 
-  echo "<p>Committing changes!</p>";
   $dbh->commit();
 
+  echo json_encode(array('status' => 'success', 'message' => null, 'data' => null));
+
 } catch (Exception $e) {
-  echo "<p>Rolling back database changes due to exception: ",  $e->getMessage(), "</p>";
-  $dbh->rollBack();
+  if ($dbh)
+    $dbh->rollBack();
+
+  echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
 }
 
 ?>

@@ -3,8 +3,8 @@
 try {
   require "./db.php";
 
-  if ($USE_GET) $REQUEST = $_GET;
-  else          $REQUEST = $_POST;
+  if ($cfg['use_get']) $REQUEST = $_GET;
+  else                 $REQUEST = $_POST;
 
   if (!array_key_exists('userid', $REQUEST))
     throw new Exception('Did not supply userid');

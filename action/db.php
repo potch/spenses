@@ -1,7 +1,5 @@
 <?php
 
-$USE_GET = false;
-
 $cfg = array();
 require_once('config.php');
 
