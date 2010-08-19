@@ -1,8 +1,98 @@
+function get_userid() {
+    var cookie_fields = document.cookie.split('; ');
+    for (var i = 0; i < cookie_fields.length; i++) {
+	var cookie = cookie_fields[i].split('=');
+	if (cookie[0] == 'user[userid]')
+	    return cookie[1];
+    }
+}
+
 $(document).ready(function () {
 
     $.ajaxSetup({
         dataType: 'json'
     });
+
+    function get_cohort_list_callback(response)
+    {
+	if (response && response.status == 'success' && response.data.length)
+	{
+	    var myid = get_userid();
+
+	    var contents = "";
+	    var most_recent_cohort = null;
+
+	    for (var i = 0; i < response.data.length; i++)
+		if (most_recent_cohort == null || response.data[i].date_updated < response.data[most_recent_cohort].date_updated)
+		    most_recent_cohort = i
+	    
+	    for (var i = 0; i < response.data.length; i++)
+	    {
+		var item = response.data[i];
+		contents += "<option name='" + item.name + "' value='" + item.cohortid + "'" + (i == most_recent_cohort ? " selected" : "") + ">" + item.name + "</option>";
+	    }
+
+	    document.getElementById('cohorts').innerHTML = contents;
+
+	    $.post('action/get_user_list.php', {'cohortid': $('#cohorts').val()}, get_user_list_callback);
+	}
+    }
+
+    function get_balance_callback(response)
+    {
+	if (response && response.status == 'success') {
+	    var owelist = "";
+	    var owedlist = "";
+
+	    // How do we get the current userid from within javascript?
+	    var myid = get_userid();
+
+	    for (var i = 0; i < response.data.length; i++) {
+		var item = response.data[i];
+		if (item.userid_from == myid && item.amount > 0) {
+		    owelist += '<li>You owe ' + item.to_nick + ' <span class="amount">$' + (1 * item.amount) + '</span></li>';
+		} else if (item.userid_from == myid && item.amount < 0) {
+		    owedlist += '<li>' + item.to_nick + ' owes you <span class="amount">$' + (-1 * item.amount) + '</span></li>';
+		} else if (item.userid_to == myid && item.amount > 0) {
+		    owedlist += '<li>' + item.from_nick + ' owes you <span class="amount">$' + (1 * item.amount) + '</span></li>';
+		} else if (item.userid_to == myid && item.amount < 0) {
+		    owelist += '<li>You owe ' + item.from_nick + ' <span class="amount">$' + (-1 * item.amount) + '</span></li>';
+		}
+	    }
+
+	    $('#owelist')[0].innerHTML  = owelist;
+	    $('#owedlist')[0].innerHTML = owedlist;
+
+	    if (owelist  == "") $("#owe").addClass("hideMe");
+	    if (owedlist == "") $("#owed").addClass("hideMe");
+	}
+    }
+
+    function get_user_list_callback(response) {
+	if (response && response.status == 'success')
+	{
+	    var myid = get_userid();
+
+	    var contents_user_select = "";
+	    var contents_iou_table   = "";
+	    for (var i = 0; i < response.data.length; i++) {
+		var item = response.data[i];
+		if (myid == item.userid)
+		{
+		    contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "' selected>" + item.nick + "</option>";
+		    contents_iou_table   += "<div class='row hidden'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[0][amount]' /><input type='hidden' name='iou[0][userid]' value='" + item.userid + "' /></div>";
+		}
+		else
+		{
+		    contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "'>" + item.nick + "</option>";
+		    contents_iou_table   += "<div class='row'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[0][amount]' /><input type='hidden' name='iou[0][userid]' value='" + item.userid + "' /></div>";
+		}
+	    }
+
+	    $('#users')[0].innerHTML           = contents_user_select;
+	    $('#purchaseamounts')[0].innerHTML = contents_iou_table;
+	}
+    }
 
     $('#login-form').submit(function (e) {
         $form = $('#login-form');
@@ -15,34 +105,33 @@ $(document).ready(function () {
 
     $('#nav ul').click(function(e) {
         var li = $(e.target);
+
         if (li.attr('pane')) {
             $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
             li.addClass("selected");
             $("#" + li.attr('pane')).addClass('selected');
         }
+
+	if (li.attr('pane') == 'purchases') {
+	    $.post('action/get_cohort_list.php', {'userid': get_userid()}, get_cohort_list_callback);
+	} else if (li.attr('pane') == 'balances') {
+	    $.post('action/get_balance.php',     {'userid': get_userid()}, get_balance_callback);
+	}
     });
 
-    $.post('action/getbalance.php', function(data) {
-        var result = $.parseJSON(data);
-
-        document.getElementById("owelist").innerHTML="";
-        document.getElementById("owedlist").innerHTML="";
-
-        if (result.owe && result.owe.length) {
-            for (var i = 0; i < result.owe.length; i++) {
-                var item = result.owe[i];
-                document.getElementById("owelist").innerHTML += "<li>You owe " + item.name + " <span class='amount'>$" + item.amount + "</li>";
-            }
-        } else {
-            $("#owe").addClass("hideMe");
-        }
-        if (result.owed && result.owed.length) {
-            for (var i=0; i < result.owed.length; i++) {
-                var item = result.owed[i];
-                document.getElementById("owedlist").innerHTML += "<li>" + item.name + " owes you <span class='amount'>$" + item.amount + "</li>";
-            }
-        } else {
-            $("#owed").addClass("hideMe");
-        }
+    $('#cohorts').change(function(e) {
+	$.post('action/get_user_list.php', {'cohortid': $('#cohorts').val()}, get_user_list_callback);
     });
+    
+    /*
+    $('#users').mousedown(function(e) {
+	$.post('action/get_user_list.php', {'cohortid': $('#cohorts').val()}, get_user_list_callback);
+    });
+    */
+
+    //$('#users').mousedown(get_user_list);
+    //$('#users').click(get_user_list);
+    //$('#users').blur(function(e) {});
+
+    $.post('action/get_balance.php', {'userid': get_userid()}, get_balance_callback);
 });

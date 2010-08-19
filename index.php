@@ -23,6 +23,7 @@ require "./action/db.php";
   </head>
   <?php
     $username   = $_COOKIE['user']['name'];
+    $usernick   = $_COOKIE['user']['nick'];
     $userid     = $_COOKIE['user']['userid'];
     $datestring = date("Y-m-d");
   ?>
@@ -44,22 +45,23 @@ require "./action/db.php";
 	<li>location</li>
       </ul>
     </nav>
+    <div id="debug" class="hidden"></div>
     <div id="content">
       <div id="purchases" class="pane">
 	<h2>Add a Purchase</h2>
 	<form action='action/addpurchase.php' method='post'>
 	  <fieldset>
-	    <div class="row"><label for="">Cohort</label><?php cohort_dropdown($userid); ?></div>
+	    <div class="row"><label for="">Cohort</label><select id='cohorts'><option selected name='None'>Select cohort...</option></select></div>
 	    <!-- need to add "cohort"=cohortId field in post data -->
 	  </fieldset>
 	  <fieldset>
 	    <div class="row"><label for="purchasedate">Date</label><input id="purchasedate" type='date' name='date' value='<?php echo $datestring; ?>' /></div>
-	    <div class="row"><label for="">Who's Paying</label><?php /* user_dropdown($userid); */ ?></div>
+	    <div class="row"><label for="">Who's Paying</label><select id='users'><option selected name='<?php echo $userid; ?>'><?php echo $usernick; ?></option></select></div>
 	    <div class="row"><label for="">Location</label><input type='text' name='location'/></div>
 	    <div class="row"><label for="">Description</label><input type='text' name='desc'    /></div>
 	    <div class="row"><label for="">Amount (in $)</label><input type='tel'  name='amount'  /></div>
 	  </fieldset>
-	  <fieldset>
+	  <fieldset id="purchaseamounts">
  	    <!-- <div class="row"><label for="">To Andrew</label><input type='tel'  name='iou[0][amount]' /><input type="hidden" name='iou[0][userid]' value='' /></div> -->
 	  </fieldset>
 	  <input type='submit' />
