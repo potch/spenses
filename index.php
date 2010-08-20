@@ -52,15 +52,15 @@ require "./action/db.php";
       <h2>Add a Purchase</h2>
       <form id="purchases-form" action='action/add_purchase.php' method='POST'>
         <fieldset>
-          <div class="row"><label for="">Cohort</label><select id='cohorts'><option selected name='None'>Select cohort...</option></select></div>
+          <div class="row"><label for="">Cohort</label><select id='cohorts' name='cohortid'><option selected name='None'>Select cohort...</option></select></div>
           <!-- need to add "cohort"=cohortId field in post data -->
         </fieldset>
         <fieldset>
           <div class="row"><label for="purchasedate">Date</label><input id="purchasedate" type='date' name='date' value='<?php echo $datestring; ?>' /></div>
-          <div class="row"><label for="">Who's Paying</label><select id='users'><option selected name='<?php echo $userid; ?>'><?php echo $usernick; ?></option></select></div>
-          <div class="row"><label for="">Location</label><input type='text' name='location'/></div>
-          <div class="row"><label for="">Description</label><input type='text' name='desc'    /></div>
-          <div class="row"><label for="">Amount (in $)</label><input type='tel'  name='amount'  /></div>
+          <div class="row"><label for="whopaid">Who's Paying</label><select id='whopaid' name='whopaid'><option selected name='<?php echo $userid; ?>'><?php echo $usernick; ?></option></select></div>
+          <div class="row"><label for="location">Location</label><input type='text' id='location' name='location'/></div>
+          <div class="row"><label for="desc">Description</label><input type='text' id='desc' name='desc'    /></div>
+          <div class="row"><label for="amount">Amount (in $)</label><input type='tel' id='amount' name='amount'  /></div>
         </fieldset>
         <fieldset id="purchaseamounts">
            <!-- <div class="row"><label for="">To Andrew</label><input type='tel'  name='iou[0][amount]' /><input type="hidden" name='iou[0][userid]' value='' /></div> -->

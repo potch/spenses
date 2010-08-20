@@ -81,21 +81,23 @@ $(document).ready(function () {
                 var item = response.data[i];
                 if (myid == item.userid) {
                     contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "' selected>" + item.nick + "</option>";
-                    contents_iou_table   += "<div class='row hidden' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[0][amount]' /><input type='hidden' name='iou[0][userid]' value='" + item.userid + "' /></div>";
+                    contents_iou_table   += "<div class='row hidden' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou["+i+"][amount]' /><input type='hidden' name='iou["+i+"][userid]' value='" + item.userid + "' /></div>";
                 }
                 else {
                     contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "'>" + item.nick + "</option>";
-                    contents_iou_table   += "<div class='row' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[0][amount]' /><input type='hidden' name='iou[0][userid]' value='" + item.userid + "' /></div>";
+                    contents_iou_table   += "<div class='row' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou["+i+"][amount]' /><input type='hidden' name='iou["+i+"][userid]' value='" + item.userid + "' /></div>";
                 }
             }
 
-            $('#users')[0].innerHTML           = contents_user_select;
+            $('#whopaid')[0].innerHTML           = contents_user_select;
             $('#purchaseamounts')[0].innerHTML = contents_iou_table;
         }
     }
 
     function add_purchase_callback(response) {
         if (response && response.status == 'success') {
+            alert('Hello');
+            $('#location, #desc, #amount').val('');
         }
     }
 
@@ -137,7 +139,7 @@ $(document).ready(function () {
         $.post('action/get_user_list.php', {'cohortid': $('#cohorts').val()}, get_user_list_callback);
     });
 
-    $('#users').change(function(e) {
+    $('#whopaid').change(function(e) {
         var selected_id = $(this).val();
 
         $('#purchaseamounts .row').removeClass('hidden');

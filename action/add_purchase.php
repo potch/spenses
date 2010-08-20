@@ -24,19 +24,19 @@ try {
 
   if (!empty($REQUEST["amount"]) && !is_numeric($REQUEST["amount"]))
     throw new Exception("Invalid amount ${REQUEST["amount"]}");
-      
+
   if (!is_array($REQUEST['iou']) || count($REQUEST['iou']) == 0)
     throw new Exception("Invalid list of IOUs ${REQUEST["iou"]}");
 
   foreach ($REQUEST['iou'] as $iou) {
     if (!is_array($iou) || !array_keys_exist($iou, array('amount','userid')))
       throw new Exception("Invalid iou entry $iou");
-    elseif (!is_numeric($iou['amount']))
-      throw new Exception("Invalid iou amount ${iou["amount"]}");
+    elseif ($iou['amount'] != "" && !is_numeric($iou['amount']))
+      throw new Exception("Invalid iou amount ${iou["amount"]} for id ${iou["userid"]}");
   }
-    
+
   // if ($debug) echo("<p>Updating the database:</p>");
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   // find the location specified by the user
 
@@ -81,10 +81,10 @@ try {
   $useridEnterer = $_COOKIE['user']['userid'];
 
   print_sql($sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=${REQUEST["amount"]}, userid=$useridEnterer, userid_payer=${REQUEST["whopaid"]}, locationid=$locationId, date_of=\"$datestring\", date_created=NOW()");
-  
+
   if (($nrows = $dbh->exec($sql)) != 1)
     throw new Exception("Inserted $nrows rows into purchase table, expected 1...");
-    
+
   $purchaseId = $dbh->lastInsertId();
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -98,6 +98,8 @@ try {
     // We don't store self-ious
     if ($REQUEST['whopaid'] == $iou['userid']) continue;
 
+    if (($iou['amount']) == "") continue;
+
     print_sql($sql = "INSERT INTO iou SET purchaseid=$purchaseId, cohortid=${REQUEST["cohortid"]}, userid_payer=${REQUEST["whopaid"]}, userid_payee=${iou["userid"]}, amount=${iou["amount"]}, date_updated=NOW()");
 
     if (($nrows = $dbh->exec($sql)) != 1)
@@ -108,11 +110,11 @@ try {
     } else {
       print_sql($sql = "UPDATE balance SET amount=amount+${iou["amount"]} WHERE userid_to=${REQUEST["whopaid"]} AND userid_from=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}");
     }
-      
+
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Updated $nrows rows in balance table, expected 1...");
 
-  }  
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   // commit the transaction on success
@@ -120,13 +122,13 @@ try {
   // if ($debug)   echo "<p>Everything was successful -- committing the transaction!</p>";
   $dbh->commit();
 
-  echo json_encode(array('result' => 'success', 'message' => null, 'data' => null));
+  echo json_encode(array('status' => 'success', 'message' => null, 'data' => null));
 
 } catch (Exception $e) {
   ////////////////////////////////////////////////////////////////////////////////
   // roll back the transaction on any error
 
-  echo json_encode(array('result' => 'error', 'message' => $e->getMessage(), 'data' => null));
+  echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
 
   $dbh->rollBack();
 }

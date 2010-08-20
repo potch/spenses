@@ -6,7 +6,7 @@ require_once('config.php');
 function print_sql($sql) {
   global $cfg;
   if ($cfg['print_sql']) {
-    echo "<script>console.log('".addslashes($sql)."');</script>";
+    echo "console.log('".addslashes($sql)."');";
   }
 }
 
@@ -35,7 +35,7 @@ function get_user_list($cohortid) {
     $row['cohortid'] = (int) $row['cohortid'];
     array_push($users, $row);
   }
-    
+
   return $users;
 }
 

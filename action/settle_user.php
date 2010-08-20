@@ -43,14 +43,14 @@ try {
   } else {
     print_sql($sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=$amount, userid=$useridEnterer, userid_payer=${balance["userid_to"]}, date_of=\"$datestring\", date_created=NOW()");
   }
-  $settle_payer = 
+  $settle_payer =
 
 
   print_sql($sql = "INSERT INTO purchase SET description=\"${REQUEST["desc"]}\", amount=${REQUEST["amount"]}, userid=$useridEnterer, userid_payer=${REQUEST["whopaid"]}, locationid=$locationId, date_of=\"$datestring\", date_created=NOW()");
-  
+
   if (($nrows = $dbh->exec($sql)) != 1)
     throw new Exception("Inserted $nrows rows into purchase table, expected 1...");
-    
+
   $purchaseId = $dbh->lastInsertId();
 
   foreach ($REQUEST['iou'] as $iou) {
@@ -67,11 +67,11 @@ try {
     } else {
       print_sql($sql = "UPDATE balance SET amount=amount+${iou["amount"]} WHERE userid_to=${REQUEST["whopaid"]} AND userid_from=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}");
     }
-      
+
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Updated $nrows rows in balance table, expected 1...");
 
-  }  
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   // commit the transaction on success
@@ -79,13 +79,13 @@ try {
   // if ($debug)   echo "<p>Everything was successful -- committing the transaction!</p>";
   $dbh->commit();
 
-  echo json_encode(array('result' => 'success', 'message' => null, 'data' => null));
+  echo json_encode(array('status' => 'success', 'message' => null, 'data' => null));
 
 } catch (Exception $e) {
   ////////////////////////////////////////////////////////////////////////////////
   // roll back the transaction on any error
 
-  echo json_encode(array('result' => 'error', 'message' => $e->getMessage(), 'data' => null));
+  echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
 
   $dbh->rollBack();
 }
