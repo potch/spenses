@@ -50,7 +50,7 @@ require "./action/db.php";
     <div id="content">
       <div id="purchases" class="pane">
       <h2>Add a Purchase</h2>
-      <form action='action/addpurchase.php' method='post'>
+      <form id="purchases-form" action='action/add_purchase.php' method='POST'>
         <fieldset>
           <div class="row"><label for="">Cohort</label><select id='cohorts'><option selected name='None'>Select cohort...</option></select></div>
           <!-- need to add "cohort"=cohortId field in post data -->
@@ -69,6 +69,9 @@ require "./action/db.php";
       </form>
       </div>
       <div id="balances" class="pane selected">
+        <div id="debtfree" class="hidden">
+          You have no outstanding balances.
+        </div>
         <div id="owe">
           <h2>People You Owe</h2>
           <section>
