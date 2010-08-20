@@ -7,6 +7,26 @@ function get_userid() {
     }
 }
 
+function showModal(msg, callback, options) {
+
+    function hideModal() {
+        $("#modal").addClass("hidden");
+    }
+
+    options = options || {};
+    var cancelFunc = options.cancelFunc || $.noop;
+    callback = callback || $.noop;
+
+    $("#modal-ok").click(function () {
+        hideModal();
+        callback.call();
+    })
+
+    $("#modal-msg").text(msg);
+    $("#modal").removeClass("hidden");
+
+}
+
 $(document).ready(function () {
 
     $.ajaxSetup({

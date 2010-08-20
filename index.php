@@ -29,6 +29,12 @@ require "./action/db.php";
     $datestring = date("Y-m-d");
   ?>
   <body data-id='$userid'>
+    <div id="modal" class="hidden">
+      <div>
+        <p id='modal-msg'></p>
+        <a id="modal-ok" class="button" href="#">Ok</a>
+      </div>
+    </div>
     <div id='login' class='<?php echo $needslogin ? '' : 'hidden'; ?>'>
       <h1>SPENSES LOGO HERE!!!!</h1>
       <h2>Please login</h2>
