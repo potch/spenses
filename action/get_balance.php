@@ -3,8 +3,7 @@
 try {
   require "./db.php";
 
-  if ($cfg['use_get']) $REQUEST = $_GET;
-  else                 $REQUEST = $_POST;
+  $REQUEST = get_request_data();
 
   $uid = null;
 
@@ -31,9 +30,9 @@ try {
   foreach ($res as $row) {
     array_push($data, $row);
   }
-  
-  echo json_encode(array('status' => 'success', 'message' => null, 'data' => $data));
+
+  echo json_response('success', null, $data);
 } catch (Exception $e) {
-  echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
+  echo json_response('error', $e->getMessage(), null);
   }
 ?>

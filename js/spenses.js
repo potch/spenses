@@ -96,8 +96,7 @@ $(document).ready(function () {
 
     function add_purchase_callback(response) {
         if (response && response.status == 'success') {
-            alert('Hello');
-            $('#location, #desc, #amount').val('');
+            $('#location, #desc, #amount, #purchaseamounts input').val('');
         }
     }
 

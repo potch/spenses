@@ -6,8 +6,7 @@ try {
 
   $dbh = open_db();
 
-  if ($cfg['use_get']) $REQUEST = $_GET;
-  else                 $REQUEST = $_POST;
+  $REQUEST = get_request_data();
 
   if (!array_key_exists('email', $REQUEST))
     throw new Exception('No email provided');
@@ -30,11 +29,11 @@ try {
   $expire = time() + 60 * 5 * 1;
   setcookie('openid[userid]', $data["userid"], $expire, '/');
   setcookie('openid[status]', 'outbound',      $expire, '/');
-  
-  echo json_encode(array('status' => 'success', 'message' => null, 'data' => $openid->authUrl()));
+
+  echo json_response('success', null, $openid->authUrl());
 
 } catch (Exception $e) {
-  echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
+  echo json_response('error', $e->getMessage(), null);
 }
 
 ?>

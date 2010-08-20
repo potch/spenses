@@ -3,11 +3,30 @@
 $cfg = array();
 require_once('config.php');
 
+$debug_sql = array();
+
 function print_sql($sql) {
+  global $debug_sql;
+  array_push($debug_sql, $sql);
+}
+
+function json_response($status, $message, $data) {
+  global $cfg, $debug_sql;
+  header('Content-type: application/json');
+  $response = array('status' => $status, 'message' => $message, 'data' => $data);
+  if ($cfg['print_sql']) $response['sql'] = $debug_sql;
+  return json_encode($response);
+}
+
+function get_request_data() {
   global $cfg;
-  if ($cfg['print_sql']) {
-    echo "console.log('".addslashes($sql)."');";
-  }
+
+  $REQUEST = $_POST;
+
+  if (!count($_POST) && $_COOKIE['godmode'] == $cfg['godmode'] && count($_GET))
+    $REQUEST = $_GET;
+
+  return $REQUEST;
 }
 
 function open_db() {

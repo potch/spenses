@@ -4,8 +4,7 @@ try {
 
   require "./db.php";
 
-  if ($cfg['use_get']) $REQUEST = $_GET;
-  else                 $REQUEST = $_POST;
+  $REQUEST = get_request_data();
 
   $dbh = open_db();
 
@@ -79,13 +78,13 @@ try {
   // if ($debug)   echo "<p>Everything was successful -- committing the transaction!</p>";
   $dbh->commit();
 
-  echo json_encode(array('status' => 'success', 'message' => null, 'data' => null));
+  echo json_response('success', null, null);
 
 } catch (Exception $e) {
   ////////////////////////////////////////////////////////////////////////////////
   // roll back the transaction on any error
 
-  echo json_encode(array('status' => 'error', 'message' => $e->getMessage(), 'data' => null));
+  echo json_response('error', $e->getMessage(), null);
 
   $dbh->rollBack();
 }

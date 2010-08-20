@@ -6,8 +6,8 @@ setcookie('user[userid]', '', $expire, '/');
 setcookie('user[nick]'  , '', $expire, '/');
 setcookie('user[email]' , '', $expire, '/');
 
-unset($_COOKIE['user']); 
+unset($_COOKIE['user']);
 
-echo json_encode(array('status' => 'success', 'message' => null, 'data' => null));
+echo json_response('success', null, null);
 
 ?>
