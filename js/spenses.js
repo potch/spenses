@@ -116,7 +116,10 @@ $(document).ready(function () {
 
     function add_purchase_callback(response) {
         if (response && response.status == 'success') {
+            showModal('Purchase added');
             $('#location, #desc, #amount, #purchaseamounts input').val('');
+        } else if (response && response.status == 'error') {
+            showModal('Failed purchase add: ' + response.message);
         }
     }
 

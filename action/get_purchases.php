@@ -38,7 +38,7 @@ try {
 
   }
 
-  echo json_response('success', null, $purchasedata);
+  echo json_response('success', null, $allpurchasedata);
 
 } catch (Exception $e) {
 

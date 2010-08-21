@@ -4,5 +4,9 @@ $cfg['hostname'] = 'localhost';
 $cfg['database'] = 'spenses';
 $cfg['username'] = 'username';
 $cfg['password'] = 'password';
+$cfg['docroot']  = '/spenses';
+
+$cfg['print_sql'] = false;
+$cfg['godmode']   = 'PersonalGodModePassword';
 
 ?>

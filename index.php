@@ -1,6 +1,5 @@
 <?php
 require_once "./user.php";
-require "./action/db.php";
 ?>
 <!DOCTYPE html>
 <html>

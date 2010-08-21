@@ -1,5 +1,7 @@
 <?php
 
+require_once './db.php';
+
 $expire = time() - 3600;
 setcookie('user[name]'  , '', $expire, '/');
 setcookie('user[userid]', '', $expire, '/');

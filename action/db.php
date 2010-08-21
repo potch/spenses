@@ -1,5 +1,21 @@
 <?php
 
+/*
+ * Define a custom user-facing exception class
+ */
+class UserException extends Exception
+{
+    // Redefine the exception so message isn't optional
+    public function __construct($message, $code = 0, Exception $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
+
+    // custom string representation of object
+    public function __toString() {
+        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+    }
+}
+
 $cfg = array();
 require_once('config.php');
 
@@ -27,6 +43,27 @@ function get_request_data() {
     $REQUEST = $_GET;
 
   return $REQUEST;
+}
+
+function login_as($userid, $godmode) {
+  $dbh = open_db();
+
+  if (($res = $dbh->query("SELECT * FROM user WHERE userid=$userid", PDO::FETCH_ASSOC)) == false)
+    throw new Exception("Could not query for user");
+
+  $user = $res->fetch();
+
+  if (!$user)
+    throw new Exception("No user found");
+
+  $expire = time() + 60 * 60 * 24;
+  setcookie('user[name]'  , $user['name'],   $expire, '/');
+  setcookie('user[userid]', $user['userid'], $expire, '/');
+  setcookie('user[nick]'  , $user['nick'],   $expire, '/');
+  setcookie('user[email]' , $user['email'],  $expire, '/');
+
+  if ($godmode != null)
+    setcookie('godmode', $godmode, $expire, '/');
 }
 
 function open_db() {
