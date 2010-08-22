@@ -16,7 +16,7 @@ try {
     $number = 20;
   }
 
-  print_sql($sql = "SELECT DISTINCT purchaseid FROM iou WHERE cohortid=${REQUEST["cohortid"]} AND (userid_payer=${REQUEST["userid"]} OR userid_payee=${REQUEST["userid"]}) ORDER BY date_updated DESC LIMIT $number");
+  print_sql($sql = "SELECT purchaseid, amount FROM iou WHERE cohortid=${REQUEST["cohortid"]} AND (userid_payer=${REQUEST["userid"]} OR userid_payee=${REQUEST["userid"]}) ORDER BY date_updated DESC LIMIT $number");
 
   if (($res = $dbh->query($sql, PDO::FETCH_ASSOC)) == false)
       throw new Exception("Could not select recent purchase ids");
@@ -33,6 +33,8 @@ try {
       throw new Exception("Could not select purchaseid $purchaseid");
 
     $purchasedata = $res->fetch();
+
+    $purchasedata["myamount"] = $row["amount"];
 
     array_push($allpurchasedata, $purchasedata);
 
