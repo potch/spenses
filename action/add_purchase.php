@@ -39,37 +39,46 @@ try {
   ////////////////////////////////////////////////////////////////////////////////
   // find the location specified by the user
 
-  print_sql($sql = "SELECT count(*) FROM location WHERE name LIKE \"%${REQUEST["location"]}%\"");
 
-  if (($res = $dbh->query($sql)) == false)
-    throw new Exception("Could not select from location table");
+  $locationId = 1;
+  
+  // Location is off for now, save all as the empty location.
 
-  $numLocations = $res->fetchColumn();
+  if (false) { //Remove this to re-enable locations!
 
-  if ($numLocations > 1) {
+    print_sql($sql = "SELECT count(*) FROM location WHERE name LIKE \"%${REQUEST["location"]}%\"");
 
-    throw new Exception("Location matches $numLocations database entries -- we only support one match for now!");
+    if (($res = $dbh->query($sql)) == false)
+      throw new Exception("Could not select from location table");
 
-  } elseif ($numLocations == 0) {
+    $numLocations = $res->fetchColumn();
 
-    // Need to add spell checking here, to avoid off-by-one-lettering!
+    if ($numLocations > 1) {
 
-    // if ($debug) echo "<p>Adding new location \"${REQUEST["location"]}\" to the database!</p>";
+      throw new Exception("Location matches $numLocations database entries -- we only support one match for now!");
 
-    print_sql($sql = "INSERT INTO location SET name=\"${REQUEST["location"]}\", date_created=NOW()");
+    } elseif ($numLocations == 0) {
 
-    if (($nrows = $dbh->exec($sql)) != 1)
-      throw new Exception("Inserted $nrows rows into location table, expected 1...");
+      // Need to add spell checking here, to avoid off-by-one-lettering!
 
-    $locationId = $dbh->lastInsertId();
-    // if ($debug) echo "<p>Added new location with id $locationId</p>";
+      // if ($debug) echo "<p>Adding new location \"${REQUEST["location"]}\" to the database!</p>";
 
-  } else {
-    print_sql($sql = "SELECT locationid FROM location WHERE name=\"${REQUEST["location"]}\"");
+      print_sql($sql = "INSERT INTO location SET name=\"${REQUEST["location"]}\", date_created=NOW()");
 
-    $res = $dbh->query($sql, PDO::FETCH_ASSOC);
-    $locationId = $res->fetchColumn();
-    // if ($debug) echo "<p>Found location with id $locationId in the database</p>";
+      if (($nrows = $dbh->exec($sql)) != 1)
+        throw new Exception("Inserted $nrows rows into location table, expected 1...");
+
+      $locationId = $dbh->lastInsertId();
+      // if ($debug) echo "<p>Added new location with id $locationId</p>";
+
+    } else {
+      print_sql($sql = "SELECT locationid FROM location WHERE name=\"${REQUEST["location"]}\"");
+
+      $res = $dbh->query($sql, PDO::FETCH_ASSOC);
+      $locationId = $res->fetchColumn();
+      // if ($debug) echo "<p>Found location with id $locationId in the database</p>";
+
+    }
 
   }
 

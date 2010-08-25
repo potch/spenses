@@ -14,8 +14,6 @@ require_once "./user.php";
     <link rel="shortcut icon" href="./favico.png" type="image/png" />
     <link rel="stylesheet" href="css/reset.css" type="text/css" />
     <link rel="stylesheet" href="css/spenses.css" type="text/css" />
-    <script src="js/jquery.js"></script>
-    <script src="js/spenses.js"></script>
     <!--
     <link rel="apple-touch-icon" href="/gordon/apple-touch-icon.png" />
     <link rel="apple-touch-startup-image" href="/gordon/mobilesplash.png" />
@@ -63,7 +61,8 @@ require_once "./user.php";
         <fieldset>
           <div class="row"><label for="purchasedate">Date</label><input id="purchasedate" type='date' name='date' value='<?php echo $datestring; ?>' /></div>
           <div class="row"><label for="whopaid">Who's Paying</label><select id='whopaid' name='whopaid'><option selected name='<?php echo $userid; ?>'><?php echo $usernick; ?></option></select></div>
-          <div class="row"><label for="location">Location</label><input type='text' id='location' name='location'/></div>
+          <input type='hidden' id='location' value="" name='location'/>
+          <!-- <div class="row"><label for="location">Location</label><input type='text' id='location' name='location'/></div> -->
           <div class="row"><label for="desc">Description</label><input type='text' id='desc' name='desc'    /></div>
           <div class="row"><label for="amount">Amount (in $)</label><input type='tel' id='amount' name='amount'  /></div>
         </fieldset>
@@ -89,8 +88,16 @@ require_once "./user.php";
             <ul id="owedlist"></ul>
           </section>
         </div>
+        <div id="purchases">
+          <h2>Recent purchases</h2>
+          <section>
+            <ul id="purchaselist"></ul>
+          </section>
+        </div>
       </div>
     </div>
     <pre><xmp id="out"></xmp></pre>
+    <script src="js/jquery.js"></script>
+    <script src="js/spenses.js"></script>
   </body>
 </html>

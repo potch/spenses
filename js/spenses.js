@@ -7,6 +7,44 @@ function get_userid() {
     }
 }
 
+
+// Simple JavaScript Templating
+// John Resig - http://ejohn.org/ - MIT Licensed
+(function(){
+  var cache = {};
+
+  this.tmpl = function tmpl(str, data){
+    // Figure out if we're getting a template, or if we need to
+    // load the template - and be sure to cache the result.
+    var fn = !/\W/.test(str) ?
+      cache[str] = cache[str] ||
+        tmpl(document.getElementById(str).innerHTML) :
+
+      // Generate a reusable function that will serve as a template
+      // generator (and which will be cached).
+      new Function("obj",
+        "var p=[],print=function(){p.push.apply(p,arguments);};" +
+
+        // Introduce the data as local variables using with(){}
+        "with(obj){p.push('" +
+
+        // Convert the template into pure JavaScript
+        str
+          .replace(/[\r\t\n]/g, " ")
+          .split("<%").join("\t")
+          .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+          .replace(/\t=(.*?)%>/g, "',$1,'")
+          .split("\t").join("');")
+          .split("%>").join("p.push('")
+          .split("\r").join("\\'")
+      + "');}return p.join('');");
+
+    // Provide some basic currying to the user
+    return data ? fn( data ) : fn;
+  };
+})();
+
+
 $(document).ready(function () {
 
     $.ajaxSetup({
@@ -59,7 +97,7 @@ $(document).ready(function () {
             contents += "<option name='" + item.name + "' value='" + item.cohortid + "'" + (i == most_recent_cohort ? " selected" : "") + ">" + item.name + "</option>";
             }
 
-            document.getElementById('cohorts').innerHTML = contents;
+            $('#cohorts').html(contents);
 
             $.post('action/get_user_list.php', {'cohortid': $('#cohorts').val()}, get_user_list_callback);
         }
@@ -67,25 +105,26 @@ $(document).ready(function () {
 
     function get_balance_callback(response) {
 
+        var balance_to = tmpl('<li><%=to_nick%> owes you <span class="amount"><%=amount%></span></li>');
+        var balance_from = tmpl('<li>You owe <%=from_nick%> <span class="amount"><%=amount%></span></li>');
+
         if (response && response.status == 'success') {
 
             var owelist = "", owedlist = "", myid = get_userid();
 
             for (var i = 0; i < response.data.length; i++) {
                 var item = response.data[i];
-                if (item.userid_from == myid && item.amount > 0) {
-                    owelist += '<li>You owe ' + item.to_nick + ' <span class="amount">$' + (1 * item.amount) + '</span></li>';
-                } else if (item.userid_from == myid && item.amount < 0) {
-                    owedlist += '<li>' + item.to_nick + ' owes you <span class="amount">$' + (-1 * item.amount) + '</span></li>';
-                } else if (item.userid_to == myid && item.amount > 0) {
-                    owedlist += '<li>' + item.from_nick + ' owes you <span class="amount">$' + (1 * item.amount) + '</span></li>';
-                } else if (item.userid_to == myid && item.amount < 0) {
-                    owelist += '<li>You owe ' + item.from_nick + ' <span class="amount">$' + (-1 * item.amount) + '</span></li>';
+                if (item.amount < 0) item.amount *= -1;
+                item.amount *= 1;
+                if (item.userid_from == myid) {
+                    owedlist += balance_to(item);
+                } else {
+                    owelist += balance_from(item);
                 }
             }
 
-            $('#owelist')[0].innerHTML  = owelist;
-            $('#owedlist')[0].innerHTML = owedlist;
+            $('#owelist').html(owelist);
+            $('#owedlist').html(owedlist);
 
             if (owelist  == "") $("#owe").addClass("hidden");
             if (owedlist == "") $("#owed").addClass("hidden");
@@ -113,8 +152,8 @@ $(document).ready(function () {
                 }
             }
 
-            $('#whopaid')[0].innerHTML           = contents_user_select;
-            $('#purchaseamounts')[0].innerHTML = contents_iou_table;
+            $('#whopaid').html(contents_user_select);
+            $('#purchaseamounts').html(contents_iou_table);
         }
     }
 
@@ -124,6 +163,25 @@ $(document).ready(function () {
             $('#location, #desc, #amount, #purchaseamounts input').val('');
         } else if (response && response.status == 'error') {
             showModal('Failed purchase add: ' + response.message);
+        }
+    }
+
+    function get_purchases_callback(response) {
+        if (response && response.status == 'success') {
+
+            var pl = "";
+
+            for (var i = 0; i < response.data.length; i++) {
+                var item = response.data[i];
+                pl += "<li>" +
+                      item.date_of.match(/\d{4}-\d{2}-\d{2}/)[0] +
+                      "<span class='amount'>" + Math.abs(item.myamount) + " of  " + +item.amount + "</span>" +
+                      "<div style='font-size:.8em;color:#888;'>" + (item.location_name || item.description) +
+                      "<span style='float:right;margin-right:5%'>paid by " + item.payer_nick + "</span></div>" +
+                      "</li>";
+            }
+
+            $("#purchaselist").html(pl);
         }
     }
 
@@ -146,15 +204,7 @@ $(document).ready(function () {
         var li = $(e.target);
 
         if (li.attr('pane')) {
-            $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
-            li.addClass("selected");
-            $("#" + li.attr('pane')).addClass('selected');
-        }
-
-        if (li.attr('pane') == 'purchases') {
-            $.post('action/get_cohort_list.php', {'userid': get_userid()}, get_cohort_list_callback);
-        } else if (li.attr('pane') == 'balances') {
-            $.post('action/get_balance.php',     {'userid': get_userid()}, get_balance_callback);
+            show_pane(li.attr('pane'));
         }
     });
 
@@ -184,5 +234,27 @@ $(document).ready(function () {
     ////////////////////////////////////////
     // Default view requires starting with get-balance post
 
-    $.post('action/get_balance.php', {'userid': get_userid()}, get_balance_callback);
+    function show_pane(pane_id) {
+        $pane = $('#' + pane_id);
+        $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
+        $pane.addClass("selected");
+        $("li[pane='" + pane_id + "']").addClass('selected');
+
+        if (pane_init[pane_id]) pane_init[pane_id]();
+    }
+
+    var pane_init = {
+        'purchases' : function() {
+            $.post('action/get_cohort_list.php', {'userid': get_userid()}, get_cohort_list_callback);
+        },
+        'balances' : function () {
+            $.post ('action/get_balance.php', {
+                'userid': get_userid(),
+                'cohortid': 1
+            }, get_balance_callback);
+            $.post('action/get_purchases.php', {'userid': get_userid(), 'cohortid': '1'}, get_purchases_callback);
+        }
+    };
+
+    show_pane('balances');
 });
