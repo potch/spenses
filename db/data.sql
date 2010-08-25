@@ -7,7 +7,8 @@ INSERT INTO user SET name="Stefanie Sundby", nick="Stef",   email="stef.sundby@g
 
 INSERT INTO tag VALUES ( NULL, "Settle Up" );
 
-INSERT INTO location SET name="Creamery (Palo Alto)",            addr="566 Emerson St., Palo Alto, CA",              date_created=NOW(), lat=37.443841, lon=-122.161671 ;
+INSERT INTO location SET                                                                                             date_created=NOW();
+INSERT INTO location SET name="Creamery",                        addr="566 Emerson St., Palo Alto, CA",              date_created=NOW(), lat=37.443841, lon=-122.161671 ;
 INSERT INTO location SET name="Safeway",                         addr="325 Sharon Park Dr., Menlo Park, CA",         date_created=NOW(), lat=37.423827, lon=-122.198063 ;
 INSERT INTO location SET name="Safeway",                         addr="525 El Camino Real, Menlo Park, CA",          date_created=NOW(), lat=37.451627, lon=-122.178354 ;
 INSERT INTO location SET name="Andronico's",                     addr="500 Stanford Shopping Center, Palo Alto, CA", date_created=NOW(), lat=37.439122, lon=-122.172561 ;
@@ -19,7 +20,7 @@ INSERT INTO location SET name="Chipotle",                        addr="2675 El C
 INSERT INTO location SET name="Coupa Cafe",                      addr="538 Ramona St., Palo Alto, CA",               date_created=NOW(), lat=37.446039, lon=-122.161188 ;
 INSERT INTO location SET name="Original Pancake House",          addr="420 South San Antonio Road, Los Altos, CA",   date_created=NOW(), lat=37.378888, lon=-122.114067 ;
 INSERT INTO location SET name="BevMo",                           addr="423 San Antonio Road, Mountain View, CA",     date_created=NOW(), lat=37.404903, lon=-122.109389 ;
-INSERT INTO location SET name="Creamery, Peninsula",             addr="900 High Street, Palo Alto, CA",              date_created=NOW(), lat=37.441150, lon=-122.158463 ;
+INSERT INTO location SET name="Peninsula Creamery",              addr="900 High Street, Palo Alto, CA",              date_created=NOW(), lat=37.441150, lon=-122.158463 ;
 INSERT INTO location SET name="Avanti Pizza",                    addr="3536 Alameda De Las Pulgas, Menlo Park, CA",  date_created=NOW(), lat=37.432750, lon=-122.202215 ;
 INSERT INTO location SET name="Lulu's On the Alameda",           addr="3539 Alameda De Las Pulgas, Menlo Park, CA",  date_created=NOW(), lat=37.434181, lon=-122.201786 ;
 
