@@ -4,16 +4,17 @@ require_once "./user.php";
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
 
     <title>'Spenses</title>
 
-    <link rel="shortcut icon" href="./favico.png" type="image/png" />
-    <link rel="stylesheet" href="css/reset.css" type="text/css" />
-    <link rel="stylesheet" href="css/spenses.css" type="text/css" />
+    <link rel="shortcut icon" href="./favico.png" type="image/png">
+    <link rel="stylesheet" href="css/reset.css" type="text/css">
+    <link rel="stylesheet" href="css/spenses.css" type="text/css">
     <!--
     <link rel="apple-touch-icon" href="/gordon/apple-touch-icon.png" />
     <link rel="apple-touch-startup-image" href="/gordon/mobilesplash.png" />
