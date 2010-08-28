@@ -24,6 +24,10 @@ INSERT INTO location SET name="Peninsula Creamery",              addr="900 High 
 INSERT INTO location SET name="Avanti Pizza",                    addr="3536 Alameda De Las Pulgas, Menlo Park, CA",  date_created=NOW(), lat=37.432750, lon=-122.202215 ;
 INSERT INTO location SET name="Lulu's On the Alameda",           addr="3539 Alameda De Las Pulgas, Menlo Park, CA",  date_created=NOW(), lat=37.434181, lon=-122.201786 ;
 
+-- Cohort 1 : Team Sexy
+
+INSERT INTO cohort SET name="Team Sexy", currency_code="USD", status='ac', date_created=NOW() ;
+
 INSERT INTO balance SET userid_from=1, userid_to=2, amount=0.0, cohortid=1, date_updated=NOW(), status='ac' ;
 INSERT INTO balance SET userid_from=1, userid_to=3, amount=0.0, cohortid=1, date_updated=NOW(), status='ac' ;
 INSERT INTO balance SET userid_from=1, userid_to=4, amount=0.0, cohortid=1, date_updated=NOW(), status='ac' ;
@@ -35,15 +39,32 @@ INSERT INTO balance SET userid_from=3, userid_to=4, amount=0.0, cohortid=1, date
 INSERT INTO balance SET userid_from=3, userid_to=5, amount=0.0, cohortid=1, date_updated=NOW(), status='ac' ;
 INSERT INTO balance SET userid_from=4, userid_to=5, amount=0.0, cohortid=1, date_updated=NOW(), status='ac' ;
 
-INSERT INTO cohort SET name="Team Sexy",     currency_code="USD", status='ac', date_created=NOW() ;
-INSERT INTO cohort SET name="E16, Bitches!", currency_code="USD", status='ac', date_created=NOW() ;
-
 INSERT INTO cohortuser SET cohortid=1, userid=1, inviter=NULL, status='ac' ;
 INSERT INTO cohortuser SET cohortid=1, userid=2, inviter=NULL, status='ac' ;
 INSERT INTO cohortuser SET cohortid=1, userid=3, inviter=NULL, status='ac' ;
 INSERT INTO cohortuser SET cohortid=1, userid=4, inviter=NULL, status='ac' ;
 INSERT INTO cohortuser SET cohortid=1, userid=5, inviter=NULL, status='ac' ;
 
+-- Cohort 2 : E16, Bitches!
+
+INSERT INTO cohort SET name="E16, Bitches!", currency_code="USD", status='ac', date_created=NOW() ;
+
+INSERT INTO balance SET userid_from=1, userid_to=3, amount=0.0, cohortid=2, date_updated=NOW(), status='ac' ;
+
 INSERT INTO cohortuser SET cohortid=2, userid=1, inviter=NULL, status='ac' ;
 INSERT INTO cohortuser SET cohortid=2, userid=3, inviter=NULL, status='ac' ;
 
+-- Cohort 3 : Parent Demo
+
+INSERT INTO user SET name="Ruth Pariser",   nick="Ruth",   email="rep812@gmail.com",   date_created=NOW(), openid="https://www.google.com/accounts/o8/id", status="ac";
+INSERT INTO user SET name="Howard Pariser", nick="Howard", email="hpariser@gmail.com", date_created=NOW(), openid="https://www.google.com/accounts/o8/id", status="ac";
+
+INSERT INTO cohort SET name="Parent Demo", currency_code="USD", status='ac', date_created=NOW() ;
+
+INSERT INTO balance SET userid_from=1, userid_to=6, amount=0.0, cohortid=3, date_updated=NOW(), status='ac' ;
+INSERT INTO balance SET userid_from=1, userid_to=7, amount=0.0, cohortid=3, date_updated=NOW(), status='ac' ;
+INSERT INTO balance SET userid_from=6, userid_to=7, amount=0.0, cohortid=3, date_updated=NOW(), status='ac' ;
+
+INSERT INTO cohortuser SET cohortid=3, userid=1, inviter=1, status='ac' ;
+INSERT INTO cohortuser SET cohortid=3, userid=6, inviter=1, status='ac' ;
+INSERT INTO cohortuser SET cohortid=3, userid=7, inviter=1, status='ac' ;
