@@ -144,11 +144,11 @@ $(document).ready(function () {
                 var item = response.data[i];
                 if (myid == item.userid) {
                     contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "' selected>" + item.nick + "</option>";
-                    contents_iou_table   += "<div class='row hidden' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou["+i+"][amount]' /><input type='hidden' name='iou["+i+"][userid]' value='" + item.userid + "' /></div>";
+                    contents_iou_table   += "<div class='row hidden' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[" + i + "][amount]' /><input type='hidden' name='iou[" + i + "][userid]' value='" + item.userid + "' /></div>";
                 }
                 else {
                     contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "'>" + item.nick + "</option>";
-                    contents_iou_table   += "<div class='row' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou["+i+"][amount]' /><input type='hidden' name='iou["+i+"][userid]' value='" + item.userid + "' /></div>";
+                    contents_iou_table   += "<div class='row' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[" + i + "][amount]' /><input type='hidden' name='iou[" + i + "][userid]' value='" + item.userid + "' /></div>";
                 }
             }
 
@@ -197,24 +197,35 @@ $(document).ready(function () {
             for (var i = 0; i < response.data.length; i++) {
                 var item = response.data[i];
 
-                // What do we do if you're the payer?
-                // Think about this.
+                if (myid == item.payer.userid) {
+                    // If you're the payer...
 
-                for (var j = 0; j < item.payees.length; j++) {
-                    if (item.payees[j].userid == myid) {
-                        myamount = item.payees[j].amount;
-                        break;
+                    pl += "<li>" +
+                        item.date_of.match(/\d{4}-\d{2}-\d{2}/)[0] +
+                        "<span class='amount'>total: " + (1*item.amount) + "</span>" +
+                        "<div style='font-size:.8em;color:#888;'>" + (item.location_name || item.description) +
+                        "<span style='float:right;margin-right:5%'>your purchase</span></div>" +
+                        "</li>";
+
+                } else {
+                    // If you're not the payer...
+
+                    for (var j = 0; j < item.payees.length; j++) {
+                        if (item.payees[j].userid == myid) {
+                            myamount = item.payees[j].amount;
+                            break;
+                        }
                     }
+
+                    payer_nick = (item.payer.userid == myid) ? 'you' : item.payer.nick;
+
+                    pl += "<li>" +
+                        item.date_of.match(/\d{4}-\d{2}-\d{2}/)[0] +
+                        "<span class='amount'>" + Math.abs(myamount) + " of  " + (1*item.amount) + "</span>" +
+                        "<div style='font-size:.8em;color:#888;'>" + (item.location_name || item.description) +
+                        "<span style='float:right;margin-right:5%'>paid by " + payer_nick + "</span></div>" +
+                        "</li>";
                 }
-
-                payer_nick = (item.payer.userid == myid) ? 'you' : item.payer.nick;
-
-                pl += "<li>" +
-                      item.date_of.match(/\d{4}-\d{2}-\d{2}/)[0] +
-                      "<span class='amount'>" + Math.abs(myamount) + " of  " + +item.amount + "</span>" +
-                      "<div style='font-size:.8em;color:#888;'>" + (item.location_name || item.description) +
-                      "<span style='float:right;margin-right:5%'>paid by " + payer_nick + "</span></div>" +
-                      "</li>";
             }
 
             $("#purchaselist").html(pl);
@@ -255,7 +266,9 @@ $(document).ready(function () {
         var selected_id = $(this).val();
 
         $('#purchaseamounts .row').removeClass('hidden');
-        $('#purchaseamounts .row[data-userid=' + selected_id +']').addClass('hidden');
+
+        // We don't want to blur out how much it cost for yourself!
+        // $('#purchaseamounts .row[data-userid=' + selected_id +']').addClass('hidden');
     });
 
     $('#purchases-form').submit(function(e) {
