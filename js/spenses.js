@@ -144,7 +144,8 @@ $(document).ready(function () {
                 var item = response.data[i];
                 if (myid == item.userid) {
                     contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "' selected>" + item.nick + "</option>";
-                    contents_iou_table   += "<div class='row hidden' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[" + i + "][amount]' /><input type='hidden' name='iou[" + i + "][userid]' value='" + item.userid + "' /></div>";
+                    // contents_iou_table   += "<div class='row hidden' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[" + i + "][amount]' /><input type='hidden' name='iou[" + i + "][userid]' value='" + item.userid + "' /></div>";
+                    contents_iou_table   += "<div class='row' data-userid='" + item.userid + "'><label for=''>To " + item.nick + "</label><input type='tel' name='iou[" + i + "][amount]' /><input type='hidden' name='iou[" + i + "][userid]' value='" + item.userid + "' /></div>";
                 }
                 else {
                     contents_user_select += "<option name='" + item.nick + "' value='" + item.userid + "'>" + item.nick + "</option>";

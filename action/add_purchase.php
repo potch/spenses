@@ -103,8 +103,8 @@ try {
 
   foreach ($REQUEST['iou'] as $iou) {
 
-    // We don't store self-ious
-    if ($REQUEST['whopaid'] == $iou['userid']) continue;
+    // Now we DO store self-ious
+    // if ($REQUEST['whopaid'] == $iou['userid']) continue;
 
     if (($iou['amount']) == "") continue;
 
@@ -112,6 +112,9 @@ try {
 
     if (($nrows = $dbh->exec($sql)) != 1)
       throw new Exception("Inserted $nrows rows into purchasedetail table, expected 1...");
+
+    // HOWEVER, we do NOT store self-balances
+    if ($REQUEST['whopaid'] == $iou['userid']) continue;
 
     if ($REQUEST['whopaid'] < $iou['userid']) {
       print_sql($sql = "UPDATE balance SET amount=amount-${iou["amount"]} WHERE userid_from=${REQUEST["whopaid"]} AND userid_to=${iou["userid"]} AND cohortid=${REQUEST["cohortid"]}");

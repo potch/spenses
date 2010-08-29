@@ -47,7 +47,7 @@ require_once "./user.php";
       <ul>
         <li pane="balances" class="selected">balance</li>
         <li pane="purchases">purchase</li>
-        <li>location</li>
+        <!-- li>location</li --><li></li>
       </ul>
     </nav>
     <div id="debug" class="hidden"></div>
