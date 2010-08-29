@@ -15,7 +15,7 @@ try {
   ////////////////////////////////////////////////////////////////////////////////
   // rudimentary error checking -- improve this section (or do it in javascript?)
 
-  if (!array_keys_exist($REQUEST, array('date', 'cohortid', 'whopaid', 'location', 'desc', 'amount', 'iou')))
+  if (!array_keys_exist(array('date', 'cohortid', 'whopaid', 'location', 'desc', 'amount', 'iou'), $REQUEST))
     throw new Exception("Insufficient \$REQUEST arguments");
 
   if (($date = strtotime($REQUEST["date"])) === false)
@@ -41,7 +41,7 @@ try {
 
 
   $locationId = 1;
-  
+
   // Location is off for now, save all as the empty location.
 
   if (false) { //Remove this to re-enable locations!

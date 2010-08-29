@@ -1,9 +1,9 @@
 CACHE MANIFEST
-# rev 1
+# rev 2
 NETWORK:
 /tracking.cgi
 CACHE:
-/index.php
+# /index.php
 /js/spenses.js
 /js/XMLHttpRequest.js
 /js/jquery.js

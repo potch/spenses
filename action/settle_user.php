@@ -10,7 +10,7 @@ try {
 
   $dbh->beginTransaction();
 
-  if (!array_keys_exist($REQUEST, array('cohortid', 'userid1', 'userid2', 'desc')))
+  if (!array_keys_exist(array('cohortid', 'userid1', 'userid2', 'desc'), $REQUEST))
     throw new Exception("Insufficient \$REQUEST arguments");
 
   $datestring = date("Y-m-d");

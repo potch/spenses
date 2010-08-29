@@ -113,9 +113,9 @@ function get_cohort_list($userid) {
 }
 
 // function to verify existence of multiple array keys (compare to array_key_exists(...))
-function array_keys_exist($array, $keys) {
+function array_keys_exist($keys, $array) {
   foreach($keys as $k) {
-    if(!isset($array[$k])) {
+    if(!array_key_exists($k,$array)) {
       return false;
     }
   }
