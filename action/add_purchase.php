@@ -28,7 +28,7 @@ try {
     throw new Exception("Invalid list of IOUs ${REQUEST["iou"]}");
 
   foreach ($REQUEST['iou'] as $iou) {
-    if (!is_array($iou) || !array_keys_exist($iou, array('amount','userid')))
+    if (!is_array($iou) || !array_keys_exist(array('amount','userid'), $iou))
       throw new Exception("Invalid iou entry $iou");
     elseif ($iou['amount'] != "" && !is_numeric($iou['amount']))
       throw new Exception("Invalid iou amount ${iou["amount"]} for id ${iou["userid"]}");
