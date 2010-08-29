@@ -169,15 +169,51 @@ $(document).ready(function () {
     function get_purchases_callback(response) {
         if (response && response.status == 'success') {
 
-            var pl = "";
+            // EXAMPLE RESPONSE:
+            //
+            // [{purchaseid: 17
+            //   description: "Testing again"
+            //   amount: 24
+            //   date_created: "2010-08-27 19:21:54"
+            //   date_updated: "0000-00-00 00:00:00"
+            //   date_of: "2010-08-28 00:00:00"
+            //   is_settle: false
+            //   creator: {userid: 1
+            //             nick: "Andrew"}
+            //   payer:   {userid: 1
+            //             nick: "Andrew"}
+            //   payees: [{userid: 2
+            //             nick: "Potch"
+            //             amount: 3.00
+            //            }
+            //            ...
+            //           ]
+            //  }
+            //  ...
+            // ]
+
+            var pl = "", myid = get_userid(), myamount = null, payer_nick = null;
 
             for (var i = 0; i < response.data.length; i++) {
                 var item = response.data[i];
+
+                // What do we do if you're the payer?
+                // Think about this.
+
+                for (var j = 0; j < item.payees.length; j++) {
+                    if (item.payees[j].userid == myid) {
+                        myamount = item.payees[j].amount;
+                        break;
+                    }
+                }
+
+                payer_nick = (item.payer.userid == myid) ? 'you' : item.payer.nick;
+
                 pl += "<li>" +
                       item.date_of.match(/\d{4}-\d{2}-\d{2}/)[0] +
-                      "<span class='amount'>" + Math.abs(item.myamount) + " of  " + +item.amount + "</span>" +
+                      "<span class='amount'>" + Math.abs(myamount) + " of  " + +item.amount + "</span>" +
                       "<div style='font-size:.8em;color:#888;'>" + (item.location_name || item.description) +
-                      "<span style='float:right;margin-right:5%'>paid by " + item.payer_nick + "</span></div>" +
+                      "<span style='float:right;margin-right:5%'>paid by " + payer_nick + "</span></div>" +
                       "</li>";
             }
 

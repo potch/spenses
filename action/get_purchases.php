@@ -83,7 +83,7 @@ EOF;
       array_push($purchasedata[(int)$iou['purchaseid']]['payees'],
                  array('userid' => (int)$iou['payee_userid'],
                        'nick'   => $iou['payee_nick'],
-                       'amount' => $iou['iou_amount']));
+                       'amount' => (float)$iou['iou_amount']));
 
     }
 
