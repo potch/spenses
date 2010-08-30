@@ -1,10 +1,10 @@
 CACHE MANIFEST
-# rev 2
+# rev 80
 NETWORK:
-/tracking.cgi
+/index.php
 CACHE:
-# /index.php
 /js/spenses.js
+/js/dragdealer.js
 /js/XMLHttpRequest.js
 /js/jquery.js
 /css/spenses.css

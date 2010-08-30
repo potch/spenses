@@ -98,6 +98,7 @@ $(document).ready(function () {
             }
 
             $('#cohorts').html(contents);
+            panes['purchases'].documentResizeHandler();
 
             $.post('action/get_user_list.php', {'cohortid': $('#cohorts').val()}, get_user_list_callback);
         }
@@ -155,6 +156,8 @@ $(document).ready(function () {
 
             $('#whopaid').html(contents_user_select);
             $('#purchaseamounts').html(contents_iou_table);
+            panes['purchases'].documentResizeHandler();
+            
         }
     }
 
@@ -230,6 +233,8 @@ $(document).ready(function () {
             }
 
             $("#purchaselist").html(pl);
+            panes['balances'].documentResizeHandler();
+            
         }
     }
 
@@ -286,10 +291,12 @@ $(document).ready(function () {
 
     function show_pane(pane_id) {
         $pane = $('#' + pane_id);
-        $('#nav ul li.selected, #content .pane.selected').removeClass("selected");
-        $pane.addClass("selected");
-        $("li[pane='" + pane_id + "']").addClass('selected');
-
+        $('#nav ul li.selected').removeClass("selected");
+        $('#container .pane.selected').removeClass("selected").addClass("hideleft");
+        $("#nav ul li[pane='" + pane_id + "']").addClass('selected');
+        $('#' + pane_id).addClass("selected").removeClass("hideleft");
+        panes[pane_id].documentResizeHandler();
+        
         if (pane_init[pane_id]) pane_init[pane_id]();
     }
 
@@ -305,6 +312,10 @@ $(document).ready(function () {
             $.post('action/get_purchases.php', {'userid': get_userid(), 'cohortid': '1'}, get_purchases_callback);
         }
     };
+    var panes = {}
 
+    $(".pane").each(function (i,v) {
+        panes[v.id] = new Dragdealer(v, { vertical: true, loose: true });
+    });
     show_pane('balances');
 });

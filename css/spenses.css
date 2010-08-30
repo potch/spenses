@@ -120,20 +120,55 @@ h2 {
     line-height:3em;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;          
+}
+#container {
+    position: relative;
+    height: 100%;
+}
+
+.bottom {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    z-index:10;
+}
+.content {
+    position: absolute;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -box-sizing: border-box;
+    cursor: pointer;
+    padding: 12px;
+}
 .pane {
-    display:none;
+    position: absolute;
+    background: #eee;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    -webkit-transition: left .3s;
 }
 .pane.selected {
     display:block;
 }
 
-.hideMe {
-    display:none;
+.hideright {
+    left: 100%;
+}
+.hideleft {
+    left: -100%;
 }
 
-#content, #login form {
-    clear:both;
-    padding:12px;
+.hideMe {
+    display:none;
 }
 
 #balances li {
