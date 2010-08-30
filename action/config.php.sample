@@ -1,12 +1,33 @@
 <?php
 
-$cfg['hostname'] = 'localhost';
-$cfg['database'] = 'spenses';
-$cfg['username'] = 'username';
-$cfg['password'] = 'password';
-$cfg['docroot']  = '/spenses';
+// MySQL database connection information
+
+$cfg['hostname']   = 'localhost';
+$cfg['database']   = 'spenses';
+$cfg['username']   = 'username';
+$cfg['password']   = 'password';
+
+// How to know the path
+
+$cfg['serverroot'] = '/web/path/to/spenses/relative/to/domain';
+$cfg['docroot']    = '/server/path/to/spenses';
+
+// Debug parameters
 
 $cfg['print_sql'] = false;
 $cfg['godmode']   = 'PersonalGodModePassword';
+
+// Whether to dynamically change the cache manifest on every
+// update to any of the cached files
+// Also, describe which files to cache. Dynamically builds
+// the cache.manifest file
+
+$cfg['dynamic_cache'] = true;
+
+$cfg['tocache'] =
+  array('NETWORK' => array(// List of files to always get from server:
+                           $cfg['docroot'] . '/action/*'),
+        'CACHE'   => array(// List of files to put in offline cache
+                           $cfg['docroot'] . '/js/spenses.js')
 
 ?>
