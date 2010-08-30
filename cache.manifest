@@ -1,9 +1,7 @@
 CACHE MANIFEST
-# rev 2
+# timestamp 1283143400
 NETWORK:
-/tracking.cgi
 CACHE:
-# /index.php
 /js/spenses.js
 /js/XMLHttpRequest.js
 /js/jquery.js

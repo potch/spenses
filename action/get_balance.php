@@ -1,7 +1,7 @@
 <?php
 
 try {
-  require "./db.php";
+  require_once "./db.php";
 
   $REQUEST = get_request_data();
 

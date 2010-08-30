@@ -1,23 +1,119 @@
 <?php
 
-/*
- * Define a custom user-facing exception class
- */
-class UserException extends Exception
-{
-    // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 0, Exception $previous = null) {
-        parent::__construct($message, $code, $previous);
-    }
-
-    // custom string representation of object
-    public function __toString() {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
-    }
-}
-
 $cfg = array();
+
 require_once('config.php');
+
+if ($cfg['dynamic_cache'] == true) {
+
+  $cache_timestamp_file = $cfg['docroot'] . '/cache.timestamp';
+
+  $cached = json_decode(file_get_contents($cache_timestamp_file), true);
+  $tocache = $cfg['tocache'];
+
+  $updated = false;
+
+  // Check to see that we have the same cache.manifest sections
+
+  foreach (array_keys($tocache) as $key) {
+    if (!array_key_exists($key, $cached)) {
+      $updated = true; break;
+    }
+  }
+
+  if (!$updated) {
+    foreach (array_keys($cached) as $key) {
+      if ($key != '_TIMESTAMP_' && !array_key_exists($key, $tocache)) {
+        $updated = true; break;
+      }
+    }
+  }
+
+  if (!$updated) {
+    foreach (array_keys($tocache) as $section) {
+
+      // Look at each file to cache within the section
+
+      foreach ($tocache[$section] as $file) {
+
+        // If we don't have a last modified timestamp, update cache
+
+        if (!array_key_exists($file, $cached[$section])) {
+          $updated = true; break;
+        }
+
+        // If we have a last modified timestamp
+
+        else {
+
+          // If the file does not exist locally, update cache
+
+          if (!file_exists($file)) {
+            $updated = true; break;
+          }
+
+          // If the file modification time is different from the cached time, update cache
+
+          elseif (filemtime($file) > $cached[$section][$file]) {
+            $updated = true; break;
+          }
+        }
+      }
+    }
+  }
+
+  if ($updated) {
+    foreach (array_keys($cached[$section]) as $file) {
+
+      if (!in_array($file, $tocache[$section])) {
+        $updated = true; break;
+      }
+    }
+  }
+
+  ////////////////////////////////////////
+
+  $timestamp = $cached['_TIMESTAMP_'];
+
+  if ($updated) {
+
+    // Change the timestamp file
+
+    $new_cached = array();
+
+    foreach (array_keys($tocache) as $section) {
+
+      $new_cached[$section] = array();
+
+      foreach ($tocache[$section] as $file)
+        $new_cached[$section][$file] = filemtime($file);
+
+    }
+
+    $timestamp = time();
+
+    $new_cached['_TIMESTAMP_'] = $timestamp;
+
+    file_put_contents($cache_timestamp_file, json_encode($new_cached));
+
+  }
+
+  $MANIFEST = "CACHE MANIFEST\n# timestamp $timestamp\n";
+
+  foreach (array_keys($tocache) as $section) {
+
+    $MANIFEST .= "$section:\n";
+
+    foreach ($tocache[$section] as $file)
+      $MANIFEST .= substr($file, strlen($cfg['docroot'])) . "\n";
+
+  }
+
+  file_put_contents($cfg['docroot'].'/cache.manifest', $MANIFEST);
+
+  # echo $MANIFEST;
+
+}
 
 $debug_sql = array();
 

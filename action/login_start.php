@@ -2,7 +2,8 @@
 
 try {
   require "./db.php";
-  require "../lib/openid.php";
+
+  require $cfg['docroot'] . '/lib/openid.php';
 
   $dbh = open_db();
 
@@ -24,7 +25,7 @@ try {
 
   $openid->identity = $data["openid"];
   $openid->realm = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
-  $openid->returnUrl = $openid->realm . $cfg['docroot'] . '/action/login_finish.php';
+  $openid->returnUrl = $openid->realm . $cfg['serverroot'] . '/action/login_finish.php';
 
   $expire = time() + 60 * 5 * 1;
   setcookie('openid[userid]', $data["userid"], $expire, '/');

@@ -3,7 +3,8 @@
 try {
 
   require "./db.php";
-  require "../lib/openid.php";
+
+  require $cfg['docroot'] . '/lib/openid.php';
 
   if (!isset($_GET['openid_mode']))
     throw new Exception('Bad request');
@@ -33,10 +34,10 @@ try {
   setcookie ("openid[status]", "", time() - 3600, '/');
   unset($_COOKIE['openid']);
 
-  header('Location:' . '../index.php');
+  header('Location:' . '../');
 
 } catch (Exception $e) {
-  header('Location:' . '../index.php?err=' . urlencode($e->getMessage()));
+  header('Location:' . '../?err=' . urlencode($e->getMessage()));
 }
 
 ?>
